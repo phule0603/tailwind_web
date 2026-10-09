@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#020617"/>
+  <path d="M14 12h36v8c0 10-7 17-18 18-11-1-18-8-18-18z" fill="#facc15"/>
+  <path d="M26 38h12v8h6v6H20v-6h6z" fill="#facc15"/>
+  <text x="32" y="29" font-family="Arial Black,Arial" font-weight="900" font-size="13" text-anchor="middle" fill="#020617">GOAT</text>
+</svg>
