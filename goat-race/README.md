@@ -53,7 +53,7 @@ Không có bóng: nhấn SÚT khi bóng bổng tới gần để **đánh đầu
 
 ## Chạy local
 
-Yêu cầu: Node.js ≥ 20.9.
+Yêu cầu: Node.js 24 (`engines` trong `package.json` là `24.x`; Vercel dùng giá trị này thay cho cài đặt Node.js của project).
 
 ```bash
 cd goat-race
@@ -108,6 +108,7 @@ Thiết lập một lần:
    cat .vercel/project.json   # lấy "orgId" và "projectId"
    ```
    Để trống mục **Root Directory** của project trên Vercel — CLI được chạy từ chính thư mục `goat-race/`.
+   Nếu Vercel báo `Found invalid or discontinued Node.js Version: "18.x"`: vào **Settings → Build and Deployment → Node.js Version** chọn **24.x** (với `engines` = `24.x` Vercel cũng tự dùng Node 24 khi build từ `goat-race/`).
 2. Tạo token tại <https://vercel.com/account/tokens>.
 3. GitHub → **Settings** → **Secrets and variables** → **Actions**: thêm `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`.
 4. Push — mọi lần push sau tự deploy.
