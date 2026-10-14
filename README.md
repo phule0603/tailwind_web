@@ -40,7 +40,7 @@ Tiến độ: CPM trên lịch làm việc của dự án. FS: `ES ≥ EF(trư�
 
 ## Chạy local
 
-Yêu cầu: Node.js ≥ 20.9.
+Yêu cầu: Node.js 24 (cố định trong `engines` để Vercel build bằng Node 24 thay vì phiên bản cũ trong cài đặt project).
 
 ```bash
 npm install
