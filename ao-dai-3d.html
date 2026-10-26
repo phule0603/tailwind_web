@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Áo Dài Nam 3D</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+Display:ital,wght@0,500;0,600;1,500&display=swap">
+<style>
+/* Layout: xưởng may — cột số đo bên trái, sân khấu 3D ở giữa, bàn rập & bảng thông số bên dưới. Màu sơn son thếp vàng trên nền giấy. */
+:root {
+  --bg: #ecebe6;
+  --surface: #f7f6f2;
+  --stage: #e2dfd8;
+  --ink: #1f1b19;
+  --muted: #6a625d;
+  --line: #d3cec5;
+  --accent: #9b2a24;
+  --accent-ink: #ffffff;
+  --gold: #a07a2a;
+  --warn: #9a5b00;
+  --warn-bg: #f5e7cf;
+  --ok: #3d6b45;
+  --font-display: "Noto Serif Display", "Times New Roman", Georgia, serif;
+  --font-body: "Be Vietnam Pro", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --r: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141211; --surface: #1d1a18; --stage: #191615; --ink: #ece6de; --muted: #a39990;
+    --line: #36312d; --accent: #d25a4f; --accent-ink: #1a0f0d; --gold: #d4ae5c;
+    --warn: #f0b85a; --warn-bg: #3a2c16; --ok: #8cc49a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141211; --surface: #1d1a18; --stage: #191615; --ink: #ece6de; --muted: #a39990;
+  --line: #36312d; --accent: #d25a4f; --accent-ink: #1a0f0d; --gold: #d4ae5c;
+  --warn: #f0b85a; --warn-bg: #3a2c16; --ok: #8cc49a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 15px/1.55 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 48px;
+}
+.wrap { max-width: 1320px; margin: 0 auto; display: grid; gap: 20px; }
+header.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
+h1 { font: 600 clamp(1.9rem, 3.4vw, 2.7rem)/1.05 var(--font-display); margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+h1 em { color: var(--accent); font-style: italic; font-weight: 500; }
+.lede { margin: 6px 0 0; color: var(--muted); max-width: 60ch; }
+h2 { font: 600 1.25rem/1.2 var(--font-display); margin: 0; text-wrap: balance; }
+.eyebrow { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; gap: 6px; align-items: baseline; border: 1px solid var(--line); background: var(--surface); padding: 5px 10px; border-radius: 999px; font-size: 0.82rem; }
+.chip b { font-family: var(--font-mono); font-weight: 500; font-variant-numeric: tabular-nums; }
+.chip.warn { border-color: var(--warn); background: var(--warn-bg); color: var(--warn); }
+
+.studio { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 880px) { .studio { grid-template-columns: minmax(0, 1fr); } }
+
+aside.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 18px; min-width: 0; }
+fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 8px; min-width: 0; }
+legend { padding: 0; margin-bottom: 4px; }
+.presets { display: flex; gap: 6px; flex-wrap: wrap; }
+.presets button { flex: 1 1 0; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) 92px; align-items: center; gap: 8px; }
+.row label { font-size: 0.88rem; line-height: 1.25; }
+.row label small { display: block; color: var(--muted); font-size: 0.74rem; }
+.row label code { font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); margin-left: 4px; }
+.num { position: relative; }
+.num input { width: 100%; font: 500 0.95rem var(--font-mono); font-variant-numeric: tabular-nums; padding: 6px 30px 6px 8px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--ink); text-align: right; }
+.num span { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 0.72rem; color: var(--muted); pointer-events: none; }
+.num input[aria-invalid="true"] { border-color: var(--warn); }
+.err { color: var(--warn); font-size: 0.78rem; margin: 0; }
+select, button, input[type="color"] { font: inherit; }
+select { width: 100%; padding: 6px 8px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--ink); }
+.swatches { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.sw { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--surface); outline: 1px solid var(--line); cursor: pointer; padding: 0; }
+.sw[aria-pressed="true"] { outline: 2px solid var(--ink); }
+input[type="color"] { width: 36px; height: 30px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); padding: 2px; cursor: pointer; }
+.btn { border: 1px solid var(--line); background: var(--bg); color: var(--ink); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
+.btn:hover { border-color: var(--ink); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.stage { position: relative; background: var(--stage); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; min-width: 0; height: min(78vh, 760px); min-height: 460px; }
+.stage canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+.stage canvas:active { cursor: grabbing; }
+.toolbar { position: absolute; left: 12px; right: 12px; top: 12px; display: flex; flex-wrap: wrap; gap: 6px; justify-content: space-between; pointer-events: none; }
+.toolbar > div { display: flex; flex-wrap: wrap; gap: 6px; pointer-events: auto; }
+.toolbar .btn { background: var(--surface); }
+.toolbar .btn[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.hint { position: absolute; left: 12px; bottom: 10px; right: 12px; font-size: 0.76rem; color: var(--muted); pointer-events: none; }
+.nogl { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--muted); }
+
+section.bench { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); min-width: 0; }
+.tabs { display: flex; flex-wrap: wrap; gap: 2px; border-bottom: 1px solid var(--line); padding: 0 12px; }
+.tabs button { border: 0; background: none; color: var(--muted); padding: 12px 12px 10px; cursor: pointer; font: 500 0.92rem var(--font-body); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tabpane { padding: 18px; }
+.pieces { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+figure.piece { margin: 0; border: 1px solid var(--line); border-radius: 4px; padding: 10px; background: var(--bg); min-width: 0; display: grid; gap: 6px; align-content: start; }
+figure.piece svg { width: 100%; height: auto; max-height: 520px; display: block; color: var(--ink); }
+figure.piece figcaption { font-size: 0.85rem; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+figure.piece figcaption span { color: var(--muted); }
+.piece.wide { grid-column: 1 / -1; }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+td.v { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; font-weight: 500; }
+td.f { font-family: var(--font-mono); font-size: 0.82rem; color: var(--muted); }
+tr.grp td { font: 600 1rem var(--font-display); padding-top: 16px; color: var(--accent); border-bottom-color: var(--ink); }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
+.status { font-size: 0.82rem; color: var(--ok); }
+ol.steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; counter-reset: s; max-width: 75ch; }
+ol.steps li { display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: start; counter-increment: s; }
+ol.steps li::before { content: counter(s); font: 600 1rem var(--font-display); color: var(--accent); text-align: right; }
+ol.steps label { display: flex; gap: 10px; align-items: start; cursor: pointer; }
+ol.steps input { margin-top: 5px; accent-color: var(--accent); }
+ol.steps p { margin: 2px 0 0; color: var(--muted); font-size: 0.88rem; }
+ol.steps input:checked + div strong { text-decoration: line-through; color: var(--muted); }
+.mat { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.mat div { border-top: 2px solid var(--ink); padding-top: 8px; }
+.mat b { font-family: var(--font-mono); font-weight: 500; }
+.mat p { margin: 4px 0 0; color: var(--muted); font-size: 0.88rem; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Ngũ thân cổ đứng · vạt hò chéo · tay ráp vai</div>
+      <h1>Áo dài nam <em>từ số đo</em> ra mô hình 3D</h1>
+      <p class="lede">Nhập số đo của người mặc. Công cụ tính rập theo công thức thân sau, thân trước, vạt con, tay và cổ, rồi dựng phom áo 3D để xem trước dáng, độ xòe và đường vạt hò.</p>
+    </div>
+    <div class="chips" id="chips" aria-live="polite"></div>
+  </header>
+
+  <div class="studio">
+    <aside class="panel" aria-label="Số đo và vải">
+      <fieldset>
+        <legend><h2>Số đo cơ thể</h2></legend>
+        <div class="presets" role="group" aria-label="Mẫu số đo tham khảo">
+          <button class="btn" type="button" data-preset="S">S</button>
+          <button class="btn" type="button" data-preset="M">M</button>
+          <button class="btn" type="button" data-preset="L">L</button>
+          <button class="btn" type="button" data-preset="XL">XL</button>
+        </div>
+        <div id="f-body" class="fields"></div>
+      </fieldset>
+      <fieldset>
+        <legend><h2>Cử động &amp; kiểu dáng</h2></legend>
+        <div id="f-ease" class="fields"></div>
+      </fieldset>
+      <fieldset>
+        <legend><h2>Vải</h2></legend>
+        <div class="row"><label for="fabric">Chất liệu</label>
+          <select id="fabric">
+            <option value="gam">Gấm hoa văn</option>
+            <option value="dui">Đũi (linen)</option>
+            <option value="lua">Lụa tơ tằm dày</option>
+            <option value="kaki">Kaki mềm</option>
+          </select>
+        </div>
+        <div class="swatches" id="swatches" role="group" aria-label="Màu vải"></div>
+        <div class="row"><label for="trim">Màu viền nẹp &amp; nút</label><input type="color" id="trim" value="#c9a24a"></div>
+      </fieldset>
+      <p class="err" id="err" hidden></p>
+    </aside>
+
+    <div class="stage" id="stage">
+      <canvas id="gl" aria-label="Mô hình 3D áo dài, kéo để xoay, cuộn để phóng to"></canvas>
+      <div class="toolbar">
+        <div role="group" aria-label="Góc nhìn">
+          <button class="btn" type="button" data-view="front">Trước</button>
+          <button class="btn" type="button" data-view="side">Nghiêng</button>
+          <button class="btn" type="button" data-view="back">Sau</button>
+          <button class="btn" type="button" id="spin" aria-pressed="false">Xoay</button>
+        </div>
+        <div role="group" aria-label="Hiển thị">
+          <button class="btn" type="button" id="tg-body" aria-pressed="true">Người mẫu</button>
+          <button class="btn" type="button" id="tg-guide" aria-pressed="true">Đường đo</button>
+          <button class="btn" type="button" id="obj">Tải .OBJ</button>
+        </div>
+      </div>
+      <div class="hint">Kéo để xoay · cuộn hoặc chụm hai ngón để phóng to · 1 đơn vị = 1 cm</div>
+      <div class="nogl" id="nogl" hidden>Trình duyệt này không bật được WebGL nên không vẽ được mô hình 3D. Rập 2D và bảng thông số bên dưới vẫn dùng được.</div>
+    </div>
+  </div>
+
+  <section class="bench">
+    <div class="tabs" role="tablist" aria-label="Bàn cắt">
+      <button role="tab" type="button" id="t-rap" aria-controls="p-rap" aria-selected="true">Rập 2D</button>
+      <button role="tab" type="button" id="t-tso" aria-controls="p-tso" aria-selected="false">Bảng thông số</button>
+      <button role="tab" type="button" id="t-vl" aria-controls="p-vl" aria-selected="false">Vật liệu</button>
+      <button role="tab" type="button" id="t-may" aria-controls="p-may" aria-selected="false">Quy trình may</button>
+    </div>
+    <div class="tabpane" role="tabpanel" id="p-rap" aria-labelledby="t-rap">
+      <div class="pieces" id="pieces"></div>
+    </div>
+    <div class="tabpane" role="tabpanel" id="p-tso" aria-labelledby="t-tso" hidden>
+      <div class="tablewrap"><table id="spec"><thead><tr><th>Chi tiết</th><th>Công thức</th><th style="text-align:right">Kết quả</th></tr></thead><tbody></tbody></table></div>
+      <div class="actions"><button class="btn primary" type="button" id="copy">Sao chép bảng thông số</button><span class="status" id="copied" aria-live="polite"></span></div>
+    </div>
+    <div class="tabpane" role="tabpanel" id="p-vl" aria-labelledby="t-vl" hidden>
+      <div class="mat" id="mat"></div>
+    </div>
+    <div class="tabpane" role="tabpanel" id="p-may" aria-labelledby="t-may" hidden>
+      <ol class="steps" id="steps"></ol>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var r1 = function (x) { return Math.round(x * 10) / 10; };
+  var fmt = function (x) { return r1(x).toLocaleString('vi-VN'); };
+  var clamp = function (x, a, b) { return Math.min(b, Math.max(a, x)); };
+  var lerp = function (a, b, t) { return a + (b - a) * t; };
+  var smooth = function (t) { return t * t * (3 - 2 * t); };
+
+  // ---------- Số đo ----------
+  var BODY = [
+    { id: 'DA', label: 'Dài áo', hint: 'Sau cổ → qua gối 2–5 cm', v: 95, min: 60, max: 140 },
+    { id: 'RV', label: 'Rộng vai', v: 42, min: 30, max: 60 },
+    { id: 'VC', label: 'Vòng cổ', v: 38, min: 28, max: 52 },
+    { id: 'VN', label: 'Vòng ngực', v: 88, min: 60, max: 150 },
+    { id: 'VE', label: 'Vòng eo', v: 78, min: 55, max: 150 },
+    { id: 'VM', label: 'Vòng mông', v: 92, min: 60, max: 150 },
+    { id: 'HE', label: 'Hạ eo', hint: 'Sau cổ → eo', v: 42, min: 30, max: 60 },
+    { id: 'DT', label: 'Dài tay', hint: 'Mép vai → cổ tay', v: 60, min: 40, max: 80 },
+    { id: 'CT', label: 'Vòng cửa tay', v: 26, min: 18, max: 40 },
+    { id: 'H', label: 'Chiều cao', hint: 'Chỉ để dựng người mẫu', v: 170, min: 140, max: 205 }
+  ];
+  var EASE = [
+    { id: 'CDN', code: 'CĐ', label: 'Cử động ngực & eo', hint: 'Nam áo suông: 6–8 cm', v: 8, min: 0, max: 16 },
+    { id: 'CDM', code: 'CĐ', label: 'Cử động mông', hint: '6–8 cm', v: 8, min: 0, max: 16 },
+    { id: 'LAI', label: 'Xòe gấu thêm', hint: 'Ngang lai = ngang mông + 3–5', v: 4, min: 0, max: 12 },
+    { id: 'HO', label: 'Vạt hò bắt sang phải', hint: 'Tính từ chính trung: 10–12', v: 11, min: 6, max: 16 },
+    { id: 'CCO', label: 'Chiều cao cổ', hint: '3–3,5 cm', v: 3.5, min: 2, max: 5 },
+    { id: 'NUT', label: 'Số nút trên vạt hò', hint: '5–6 hạt', v: 6, min: 3, max: 9, step: 1, unit: 'hạt' }
+  ];
+  var PRESETS = {
+    S: { DA: 92, RV: 40, VC: 36, VN: 84, VE: 72, VM: 88, HE: 40, DT: 58, CT: 24, H: 165 },
+    M: { DA: 95, RV: 42, VC: 38, VN: 88, VE: 78, VM: 92, HE: 42, DT: 60, CT: 26, H: 170 },
+    L: { DA: 98, RV: 44, VC: 40, VN: 94, VE: 84, VM: 98, HE: 44, DT: 62, CT: 27, H: 175 },
+    XL: { DA: 100, RV: 46, VC: 42, VN: 100, VE: 92, VM: 104, HE: 45, DT: 63, CT: 28, H: 178 }
+  };
+  var COLORS = [
+    ['#7b1d1d', 'Đỏ đô'], ['#1f2f57', 'Xanh tím than'], ['#c99a2e', 'Vàng hoàng thổ'],
+    ['#ece4d2', 'Trắng ngà'], ['#2f4a3a', 'Xanh rêu'], ['#26211f', 'Đen tuyền']
+  ];
+  var ALL = BODY.concat(EASE);
+  var STORE = 'aodai3d.v1';
+
+  var state = {};
+  ALL.forEach(function (f) { state[f.id] = f.v; });
+  state.fabric = 'gam'; state.color = COLORS[0][0]; state.trim = '#c9a24a';
+  state.showBody = true; state.showGuide = true; state.done = {};
+  try {
+    var saved = JSON.parse(localStorage.getItem(STORE) || 'null');
+    if (saved && typeof saved === 'object') Object.keys(state).forEach(function (k) { if (k in saved) state[k] = saved[k]; });
+  } catch (e) { /* bỏ qua */ }
+  function persist() { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { /* bỏ qua */ } }
+
+  // ---------- Form ----------
+  function buildFields(list, host) {
+    list.forEach(function (f) {
+      var row = document.createElement('div');
+      row.className = 'row';
+      row.innerHTML = '<label for="in-' + f.id + '">' + f.label + (f.code ? '<code>' + f.code + '</code>' : (f.id.length <= 3 && f.id !== 'H' && list === BODY ? '<code>' + f.id + '</code>' : '')) +
+        (f.hint ? '<small>' + f.hint + '</small>' : '') + '</label>' +
+        '<div class="num"><input id="in-' + f.id + '" type="number" inputmode="decimal" step="' + (f.step || 0.5) + '" min="' + f.min + '" max="' + f.max + '"><span>' + (f.unit || 'cm') + '</span></div>';
+      host.appendChild(row);
+      var inp = row.querySelector('input');
+      inp.value = state[f.id];
+      inp.addEventListener('input', function () {
+        var v = parseFloat(inp.value.replace(',', '.'));
+        var bad = !isFinite(v) || v < f.min || v > f.max;
+        inp.setAttribute('aria-invalid', bad ? 'true' : 'false');
+        if (!isFinite(v)) return;
+        state[f.id] = clamp(f.step === 1 ? Math.round(v) : v, f.min, f.max);
+        update();
+      });
+    });
+  }
+  buildFields(BODY, $('f-body'));
+  buildFields(EASE, $('f-ease'));
+  document.querySelectorAll('[data-preset]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var p = PRESETS[b.dataset.preset];
+      Object.keys(p).forEach(function (k) { state[k] = p[k]; var i = $('in-' + k); i.value = p[k]; i.setAttribute('aria-invalid', 'false'); });
+      update();
+    });
+  });
+  COLORS.forEach(function (c) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'sw'; b.style.background = c[0]; b.title = c[1]; b.setAttribute('aria-label', c[1]);
+    b.addEventListener('click', function () { state.color = c[0]; $('custom').value = c[0]; update(true); });
+    $('swatches').appendChild(b);
+  });
+  var custom = document.createElement('input');
+  custom.type = 'color'; custom.id = 'custom'; custom.title = 'Màu khác'; custom.setAttribute('aria-label', 'Chọn màu vải khác');
+  custom.value = state.color;
+  custom.addEventListener('input', function () { state.color = custom.value; update(true); });
+  $('swatches').appendChild(custom);
+  $('fabric').value = state.fabric;
+  $('fabric').addEventListener('change', function () { state.fabric = $('fabric').value; update(true); });
+  $('trim').value = state.trim;
+  $('trim').addEventListener('input', function () { state.trim = $('trim').value; update(true); });
+
+  // ---------- Công thức rập ----------
+  function compute(m) {
+    var r = { warn: [] };
+    r.AB = m.DA;
+    r.AC = m.VN / 4 + 2;
+    r.AD = m.HE;
+    if (r.AD < r.AC + 6) { r.warn.push('Hạ eo quá cao so với hạ nách, đã dời eo xuống ' + fmt(r.AC + 6) + ' cm.'); r.AD = r.AC + 6; }
+    r.AE = r.AD + 18;
+    if (r.AB < r.AE + 12) { r.warn.push('Dài áo ngắn hơn hạ mông + 12 cm, tà xẻ gần như không còn.'); r.AB = r.AE + 12; }
+    r.nguc = (m.VN + m.CDN) / 4;
+    r.eo = (m.VE + m.CDN) / 4;
+    r.mong = (m.VM + m.CDM) / 4;
+    r.lai = r.mong + m.LAI;
+    r.coRong = m.VC / 5 - 0.5;
+    r.coSauSau = 1.5;
+    r.vai = m.RV / 2;
+    r.xuoiVai = m.RV / 10 + 0.5;
+    r.ngucT = r.nguc + 1; r.eoT = r.eo + 1; r.mongT = r.mong + 1; r.laiT = r.lai + 1;
+    r.coTrSau = m.VC / 5 + 1;
+    r.ho = m.HO;
+    r.vatCon = 9;
+    r.sauDauTay = m.VN / 10 + 3;
+    r.bapTay = m.VN / 5 + 2;
+    r.cuaTay = m.CT / 2 + 1;
+    r.chanCo = m.VC + 1.5;
+    r.caoCo = m.CCO;
+    r.ta = r.AB - r.AE;
+    r.gau = 2 * r.lai + 2 * r.laiT;
+    r.vaiMin = 2 * r.AB + 30; r.vaiMax = 2 * r.AB + 60;
+    if (r.vai < r.coRong + 8) r.warn.push('Vai quá hẹp so với vòng cổ, kiểm tra lại số đo vai.');
+    if (m.VE > m.VN + 8) r.warn.push('Vòng eo lớn hơn vòng ngực khá nhiều, nên tăng cử động ngực để áo không bó bụng.');
+    if (r.cuaTay * 2 < m.CT + 1) r.warn.push('Cửa tay quá chật để luồn tay.');
+    return r;
+  }
+
+  // Đường vạt hò trên mặt phẳng thân trước (x > 0 là bên trái người mặc, y tính từ đường vai A xuống).
+  function hoPoints(r) {
+    var s = r.coRong, ho = r.ho, ac = r.AC;
+    return [[s, 0], [s * 0.15 - ho * 0.35, ac * 0.2], [-ho, ac * 0.48], [-ho - 3, ac * 0.76], [-(r.ngucT - 1), ac]];
+  }
+  function catmull(pts, n) {
+    var out = [];
+    for (var i = 0; i < pts.length - 1; i++) {
+      var p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(pts.length - 1, i + 2)];
+      for (var j = 0; j < n; j++) {
+        var t = j / n, t2 = t * t, t3 = t2 * t;
+        out.push([0, 1].map(function (k) {
+          return 0.5 * ((2 * p1[k]) + (-p0[k] + p2[k]) * t + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t3);
+        }));
+      }
+    }
+    out.push(pts[pts.length - 1].slice());
+    return out;
+  }
+  function alongLength(pts, count, from, to) {
+    var acc = [0];
+    for (var i = 1; i < pts.length; i++) acc.push(acc[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+    var L = acc[acc.length - 1], res = [];
+    for (var c = 0; c < count; c++) {
+      var target = L * lerp(from, to, count === 1 ? 0.5 : c / (count - 1)), k = 1;
+      while (k < acc.length - 1 && acc[k] < target) k++;
+      var t = (target - acc[k - 1]) / ((acc[k] - acc[k - 1]) || 1);
+      res.push([lerp(pts[k - 1][0], pts[k][0], t), lerp(pts[k - 1][1], pts[k][1], t)]);
+    }
+    return res;
+  }
+
+  // ---------- Rập 2D ----------
+  function cubic(p0, p1, p2, p3, n) {
+    var o = [];
+    for (var i = 1; i <= n; i++) {
+      var t = i / n, u = 1 - t;
+      o.push([u * u * u * p0[0] + 3 * u * u * t * p1[0] + 3 * u * t * t * p2[0] + t * t * t * p3[0],
+              u * u * u * p0[1] + 3 * u * u * t * p1[1] + 3 * u * t * t * p2[1] + t * t * t * p3[1]]);
+    }
+    return o;
+  }
+  function halfBody(r, front) {
+    var cs = r.coRong, vs = r.vai, xv = r.xuoiVai, AC = r.AC, AD = r.AD, AE = r.AE, DA = r.AB;
+    var n = front ? r.ngucT : r.nguc, e = front ? r.eoT : r.eo, mo = front ? r.mongT : r.mong, l = front ? r.laiT : r.lai;
+    var neckY = front ? r.coTrSau : r.coSauSau, scoop = front ? 1.5 : 0;
+    var p = [[0, neckY]];
+    p = p.concat(front ? cubic([0, neckY], [cs * 0.55, neckY], [cs, neckY * 0.45], [cs, 0], 12)
+                       : cubic([0, neckY], [cs * 0.6, neckY], [cs * 0.95, neckY * 0.4], [cs, 0], 10));
+    p.push([vs, xv]);
+    p = p.concat(cubic([vs, xv], [vs - 1.2 - scoop, xv + (AC - xv) * 0.5], [n - 4 - scoop, AC - 0.3], [n, AC], 14));
+    p = p.concat(cubic([n, AC], [n, AC + (AD - AC) * 0.4], [e, AD - (AD - AC) * 0.3], [e, AD], 10));
+    p = p.concat(cubic([e, AD], [e, AD + (AE - AD) * 0.3], [mo, AE - (AE - AD) * 0.4], [mo, AE], 10));
+    p.push([l, DA - 1]);
+    p = p.concat(cubic([l, DA - 1], [l * 0.6, DA], [l * 0.3, DA], [0, DA], 8));
+    return p;
+  }
+  function mirror(half) {
+    var other = half.slice(1, -1).reverse().map(function (q) { return [-q[0], q[1]]; });
+    return half.concat(other);
+  }
+  function pathOf(pts, close) {
+    return 'M' + pts.map(function (q) { return r1(q[0]) + ' ' + r1(q[1]); }).join(' L') + (close ? ' Z' : '');
+  }
+  function svgPiece(content, box, fs) {
+    var pad = fs * 2.2;
+    return '<svg viewBox="' + r1(box[0] - pad * 2.6) + ' ' + r1(box[1] - pad) + ' ' + r1(box[2] - box[0] + pad * 4.6) + ' ' + r1(box[3] - box[1] + pad * 2) +
+      '" role="img" font-family="IBM Plex Mono, ui-monospace, monospace" font-size="' + r1(fs) + '">' + content + '</svg>';
+  }
+  var STROKE = 'fill="none" stroke="currentColor" vector-effect="non-scaling-stroke"';
+  function guide(y, x0, x1, label, fs) {
+    return '<line x1="' + r1(x0) + '" y1="' + r1(y) + '" x2="' + r1(x1) + '" y2="' + r1(y) + '" stroke="var(--muted)" stroke-dasharray="4 4" stroke-width="1" vector-effect="non-scaling-stroke"/>' +
+      '<text x="' + r1(x0 - fs * 0.6) + '" y="' + r1(y + fs * 0.35) + '" text-anchor="end" fill="var(--muted)">' + label + '</text>';
+  }
+  function tag(x, y, s, anchor, color) {
+    return '<text x="' + r1(x) + '" y="' + r1(y) + '" text-anchor="' + (anchor || 'middle') + '" fill="' + (color || 'currentColor') + '">' + s + '</text>';
+  }
+  function fill(pts) {
+    return '<path d="' + pathOf(pts, true) + '" fill="var(--surface)" stroke="currentColor" stroke-width="1.6" vector-effect="non-scaling-stroke"/>';
+  }
+
+  function drawPieces(r, m) {
+    var html = [];
+    var DA = r.AB;
+    // Thân sau
+    var fs = DA * 0.03;
+    var back = halfBody(r, false);
+    var g = '';
+    [[r.AC, 'C ' + fmt(r.AC)], [r.AD, 'D ' + fmt(r.AD)], [r.AE, 'E ' + fmt(r.AE)]].forEach(function (q) { g += guide(q[0], 0, r.lai + 2, q[1], fs); });
+    var c = g + fill(back) +
+      '<line x1="0" y1="0" x2="0" y2="' + DA + '" stroke="var(--accent)" stroke-width="1.4" vector-effect="non-scaling-stroke"/>' +
+      tag(-fs * 0.6, fs * 0.4, 'A', 'end') + tag(-fs * 0.6, DA, 'B ' + fmt(DA), 'end') +
+      tag(r.nguc / 2, r.AC - fs * 0.5, fmt(r.nguc)) + tag(r.eo / 2, r.AD - fs * 0.5, fmt(r.eo)) +
+      tag(r.mong / 2, r.AE - fs * 0.5, fmt(r.mong)) + tag(r.lai / 2, DA - fs * 0.9, fmt(r.lai)) +
+      tag(r.vai + fs * 0.4, r.xuoiVai + fs * 0.4, fmt(r.vai), 'start') +
+      '<path d="M' + r1(r.mong + 0.6) + ' ' + r1(r.AE) + ' l' + r1(fs * 0.9) + ' 0" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke"/>' +
+      tag(r.mong + fs * 1.8, r.AE + fs * 0.35, 'xẻ tà', 'start', 'var(--accent)') +
+      tag(fs * 0.5, DA * 0.3, 'sống lưng', 'start', 'var(--accent)');
+    html.push(['Thân sau', '× 2 mảnh, ghép sống lưng', svgPiece(c, [0, 0, r.lai + 4, DA], fs)]);
+
+    // Thân trước + vạt hò
+    var front = mirror(halfBody(r, true));
+    var ho = catmull(hoPoints(r), 14);
+    var btns = alongLength(ho, m.NUT, 0.05, 0.97);
+    g = '';
+    [[r.AC, 'C'], [r.AD, 'D'], [r.AE, 'E']].forEach(function (q) { g += guide(q[0], -r.laiT, r.laiT, q[1], fs); });
+    c = g + fill(front) +
+      '<line x1="0" y1="' + r1(r.coTrSau) + '" x2="0" y2="' + DA + '" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 5" vector-effect="non-scaling-stroke"/>' +
+      '<path d="' + pathOf(ho) + '" ' + STROKE.replace('currentColor', 'var(--accent)') + ' stroke-width="2.4"/>' +
+      btns.map(function (b) { return '<circle cx="' + r1(b[0]) + '" cy="' + r1(b[1]) + '" r="' + r1(fs * 0.32) + '" fill="var(--gold)"/>'; }).join('') +
+      tag(-r.ho - fs * 0.8, r.AC * 0.48 + fs * 0.3, 'vạt hò ' + fmt(r.ho), 'end', 'var(--accent)') +
+      tag(r.ngucT / 2, r.AC + fs * 1.3, fmt(r.ngucT)) + tag(r.eoT / 2, r.AD - fs * 0.5, fmt(r.eoT)) +
+      tag(r.mongT / 2, r.AE - fs * 0.5, fmt(r.mongT)) + tag(0, r.coTrSau + fs * 1.2, 'sâu cổ ' + fmt(r.coTrSau)) +
+      tag(r.laiT * 0.55, DA - fs * 0.9, fmt(r.laiT)) +
+      tag(r.laiT * 0.55, DA * 0.82, 'trái', 'middle', 'var(--muted)') + tag(-r.laiT * 0.55, DA * 0.82, 'phải', 'middle', 'var(--muted)');
+    html.push(['Thân trước (vạt cả)', '× 1, nhìn từ mặt phải vải', svgPiece(c, [-r.laiT - 2, 0, r.laiT + 2, DA], fs)]);
+
+    // Vạt con
+    var hb = halfBody(r, true);
+    var ai = hb.findIndex(function (q) { return q[1] >= r.AC - 0.01; });
+    var right = hb.slice(0, ai + 1).map(function (q) { return [-q[0], q[1]]; });
+    var bottom = r.AC + 6;
+    var vc = right.concat([[-r.ngucT, bottom], [r.vatCon, bottom]]);
+    var fs2 = (r.AC + 10) * 0.07;
+    c = guide(r.AC, -r.ngucT, r.vatCon + 2, 'nách', fs2) + fill(vc) +
+      '<line x1="0" y1="' + r1(r.coTrSau) + '" x2="0" y2="' + r1(bottom) + '" stroke="var(--muted)" stroke-dasharray="2 5" stroke-width="1" vector-effect="non-scaling-stroke"/>' +
+      tag(r.vatCon, bottom + fs2 * 1.2, '+' + fmt(r.vatCon), 'middle', 'var(--accent)') +
+      tag(-r.ngucT / 2, bottom - fs2 * 0.5, fmt(r.ngucT));
+    html.push(['Vạt con', '× 1 vải chính + 1 lót', svgPiece(c, [-r.ngucT - 1, 0, r.vatCon + 3, bottom + 2], fs2)]);
+
+    // Tay
+    var bt = r.bapTay, sd = r.sauDauTay, ct = r.cuaTay, DT = m.DT;
+    var fs3 = DT * 0.035;
+    var sl = [[-bt, sd]].concat(cubic([-bt, sd], [-bt * 0.55, sd * 0.95], [-bt * 0.45, 0], [0, 0], 12))
+      .concat(cubic([0, 0], [bt * 0.45, 0], [bt * 0.55, sd * 0.95], [bt, sd], 12)).concat([[ct, DT], [-ct, DT]]);
+    c = guide(sd, -bt, bt, fmt(sd), fs3) + fill(sl) +
+      '<line x1="0" y1="0" x2="0" y2="' + DT + '" stroke="var(--accent)" stroke-width="1.2" stroke-dasharray="6 4" vector-effect="non-scaling-stroke"/>' +
+      tag(-bt / 2, sd + fs3 * 1.3, fmt(bt)) + tag(bt / 2, sd + fs3 * 1.3, fmt(bt)) + tag(0, DT - fs3 * 0.6, '2 × ' + fmt(ct)) +
+      tag(fs3 * 0.5, DT * 0.55, 'dài ' + fmt(DT), 'start');
+    html.push(['Tay áo', '× 2, canh sợi dọc', svgPiece(c, [-bt - 1, 0, bt + 1, DT], fs3)]);
+
+    // Cổ
+    var L = r.chanCo, h = r.caoCo;
+    var fs4 = L * 0.045;
+    var bottomEdge = [], topEdge = [];
+    for (var i = 0; i <= 24; i++) {
+      var x = L * i / 24, lift = 0.5 * Math.pow(Math.abs(2 * i / 24 - 1), 2);
+      bottomEdge.push([x, h - lift]);
+      topEdge.push([x, -lift + (i === 0 || i === 24 ? 0.8 : 0)]);
+    }
+    var collar = bottomEdge.concat(topEdge.reverse());
+    c = fill(collar) +
+      '<line x1="' + r1(L / 2) + '" y1="-0.6" x2="' + r1(L / 2) + '" y2="' + r1(h + 0.6) + '" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>' +
+      tag(L / 2, h + fs4 * 1.6, 'chân cổ ' + fmt(L) + ' · cong 0,5 ở hai đầu') + tag(-fs4 * 0.6, h * 0.6, fmt(h), 'end') +
+      tag(L / 2, -fs4 * 0.8, 'giữa sau', 'middle', 'var(--accent)');
+    html.push(['Cổ đứng', '× 2 lá + 1 mếch keo cứng', svgPiece(c, [0, -1.5, L, h + 2], fs4)]);
+
+    $('pieces').innerHTML = html.map(function (p) {
+      return '<figure class="piece' + (p[3] ? ' wide' : '') + '"><figcaption><strong>' + p[0] + '</strong><span>' + p[1] + '</span></figcaption>' + p[2] + '</figure>';
+    }).join('');
+  }
+
+  // ---------- Bảng thông số ----------
+  var specRows = [];
+  function drawSpec(r, m) {
+    var R = [
+      ['Thân sau'],
+      ['Dài áo AB', 'DA', r.AB], ['Hạ nách AC', 'VN/4 + 2', r.AC], ['Hạ eo AD', 'số đo hạ eo', r.AD], ['Hạ mông AE', 'AD + 18', r.AE],
+      ['Ngang ngực', '(VN + CĐ)/4', r.nguc], ['Ngang eo', '(VE + CĐ)/4', r.eo], ['Ngang mông', '(VM + CĐ)/4', r.mong],
+      ['Ngang lai', 'ngang mông + ' + fmt(m.LAI), r.lai], ['Rộng cổ sau', 'VC/5 − 0,5', r.coRong], ['Sâu cổ sau', 'cố định', r.coSauSau],
+      ['Rộng vai sau', 'RV/2', r.vai], ['Hạ xuôi vai', 'RV/10 + 0,5', r.xuoiVai],
+      ['Thân trước (vạt cả)'],
+      ['Ngang ngực', 'thân sau + 1 chùm vạt', r.ngucT], ['Ngang eo', 'thân sau + 1', r.eoT], ['Ngang mông', 'thân sau + 1', r.mongT], ['Ngang lai', 'thân sau + 1', r.laiT],
+      ['Giảm nách', 'so với thân sau', 1.5], ['Rộng cổ trước', 'VC/5 − 0,5', r.coRong], ['Sâu cổ trước', 'VC/5 + 1', r.coTrSau],
+      ['Vạt hò bắt sang phải', 'từ chính trung', r.ho],
+      ['Vạt con'], ['Qua chính trung về nách trái', '8–10', r.vatCon],
+      ['Tay áo'], ['Dài tay', 'DT', m.DT], ['Sâu đầu tay', 'VN/10 + 3', r.sauDauTay], ['Rộng bắp tay', 'VN/5 + 2', r.bapTay], ['Rộng cửa tay', 'CT/2 + 1', r.cuaTay],
+      ['Cổ áo'], ['Dài chân cổ', 'VC + 1,5', r.chanCo], ['Cao cổ', '3–3,5', r.caoCo], ['Đánh cong chân cổ', 'cố định', 0.5],
+      ['Tổng thể'], ['Dài tà xẻ', 'AB − AE', r.ta], ['Vòng gấu', '2 × lai sau + 2 × lai trước', r.gau]
+    ];
+    specRows = R;
+    $('spec').querySelector('tbody').innerHTML = R.map(function (x) {
+      return x.length === 1 ? '<tr class="grp"><td colspan="3">' + x[0] + '</td></tr>'
+        : '<tr><td>' + x[0] + '</td><td class="f">' + x[1] + '</td><td class="v">' + fmt(x[2]) + ' cm</td></tr>';
+    }).join('');
+  }
+  $('copy').addEventListener('click', function () {
+    var txt = specRows.map(function (x) { return x.length === 1 ? '\n' + x[0].toUpperCase() : x[0] + ' (' + x[1] + '): ' + fmt(x[2]) + ' cm'; }).join('\n').trim();
+    var done = function () { $('copied').textContent = 'Đã sao chép.'; setTimeout(function () { $('copied').textContent = ''; }, 2000); };
+    try {
+      navigator.clipboard.writeText(txt).then(done, function () { fallbackCopy(txt); done(); });
+    } catch (e) { fallbackCopy(txt); done(); }
+  });
+  function fallbackCopy(t) {
+    var ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch (e) { /* bỏ qua */ }
+    ta.remove();
+  }
+
+  function drawMaterials(r, m) {
+    var items = [
+      ['Vải chính', fmt(r.vaiMin / 100) + ' – ' + fmt(r.vaiMax / 100) + ' m', 'Khổ 1,5 m. Gấm, đũi cao cấp, lụa tơ tằm dày hoặc kaki mềm. Ước tính 2 × dài áo + 30 đến 60 cm cho tay, cổ và vạt con.'],
+      ['Vải lót', '0,8 m', 'Lụa mỏng lót vạt con.'],
+      ['Mếch cổ', fmt(r.chanCo + 4) + ' × ' + fmt(r.caoCo * 2 + 4) + ' cm', 'Mếch keo cứng cho cổ đứng, cộng thêm nẹp vạt hò và vạt con.'],
+      ['Khuy & nút', m.NUT + ' bộ', 'Khuy bấm ẩn trong vạt hò, nút gốm, nút ngọc hoặc khuy tàu đơm ngoài.'],
+      ['Chỉ', 'cùng màu vải', 'Chỉ may và chỉ vắt sổ mép tà.']
+    ];
+    $('mat').innerHTML = items.map(function (i) { return '<div><strong>' + i[0] + '</strong> · <b>' + i[1] + '</b><p>' + i[2] + '</p></div>'; }).join('');
+  }
+
+  var STEPS = [
+    ['Ép keo mếch', 'Ép keo vào nẹp vạt hò thân trước, vạt con và cổ áo để giữ phom phẳng đứng.'],
+    ['May sống lưng thân sau', 'Chắp 2 mảnh thân sau, đường may 1,5 cm, ủi rẽ phẳng.'],
+    ['May vạt con vào thân trước', 'May viền nẹp vạt con, cố định vào đường nách và sườn bên trái.'],
+    ['May vai con', 'Nối vai thân trước với vai thân sau.'],
+    ['May cổ áo', 'Lộn 2 lá cổ, diễu chân cổ, tra vào vòng cổ, khớp đúng điểm đầu vạt hò.'],
+    ['Tra tay áo', 'Tra nách tay vào vòng nách thân trước và thân sau.'],
+    ['May sườn & xẻ tà', 'May sườn từ nách qua eo đến điểm hạ mông AE. Chừa tà từ hông xuống gấu, gấp mép 1,5 cm, diễu hoặc vắt sổ.'],
+    ['Khuy & đơm nút', 'Gắn khuy bấm ẩn dọc vạt hò từ cổ xuống dưới nách phải, đơm nút trang trí bên ngoài nẹp hò.'],
+    ['Ủi hoàn thiện', 'Ủi phẳng đường may, nẹp vạt và tà áo.']
+  ];
+  function drawSteps() {
+    $('steps').innerHTML = STEPS.map(function (s, i) {
+      return '<li><label><input type="checkbox" id="st-' + i + '"' + (state.done[i] ? ' checked' : '') + '><div><strong>' + s[0] + '</strong><p>' + s[1] + '</p></div></label></li>';
+    }).join('');
+    STEPS.forEach(function (s, i) {
+      $('st-' + i).addEventListener('change', function (e) { state.done[i] = e.target.checked; persist(); });
+    });
+  }
+
+  // ---------- Tabs ----------
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+  function selectTab(t) {
+    tabs.forEach(function (x) {
+      var on = x === t;
+      x.setAttribute('aria-selected', on ? 'true' : 'false');
+      x.tabIndex = on ? 0 : -1;
+      $(x.getAttribute('aria-controls')).hidden = !on;
+    });
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener('click', function () { selectTab(t); });
+    t.addEventListener('keydown', function (e) {
+      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (d) { var n = tabs[(i + d + tabs.length) % tabs.length]; selectTab(n); n.focus(); }
+    });
+  });
+  selectTab(tabs[0]);
+
+  // ---------- 3D ----------
+  var gl = null;
+  function initGL() {
+    if (!window.THREE) return null;
+    var canvas = $('gl'), renderer;
+    try { renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true, preserveDrawingBuffer: true }); }
+    catch (e) { return null; }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setClearColor(0x000000, 0);
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(32, 1, 5, 3000);
+    scene.add(new THREE.HemisphereLight(0xfff6ea, 0x3a3430, 0.75));
+    var key = new THREE.DirectionalLight(0xffffff, 0.75); key.position.set(120, 260, 220); scene.add(key);
+    var rim = new THREE.DirectionalLight(0xcfe0ff, 0.35); rim.position.set(-200, 160, -180); scene.add(rim);
+    var fillL = new THREE.DirectionalLight(0xffe8d0, 0.2); fillL.position.set(-160, 40, 200); scene.add(fillL);
+
+    var floorCv = document.createElement('canvas'); floorCv.width = floorCv.height = 256;
+    var fc = floorCv.getContext('2d'), grd = fc.createRadialGradient(128, 128, 0, 128, 128, 128);
+    grd.addColorStop(0, 'rgba(0,0,0,0.32)'); grd.addColorStop(0.45, 'rgba(0,0,0,0.12)'); grd.addColorStop(1, 'rgba(0,0,0,0)');
+    fc.fillStyle = grd; fc.fillRect(0, 0, 256, 256);
+    var floor = new THREE.Mesh(new THREE.CircleGeometry(70, 48), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(floorCv), transparent: true, depthWrite: false }));
+    floor.rotation.x = -Math.PI / 2; floor.position.y = 0.05; scene.add(floor);
+
+    var root = new THREE.Group(); scene.add(root);
+    var orbit = { theta: 0.42, phi: 1.42, r: 330, target: new THREE.Vector3(0, 95, 0), spin: false };
+    return { renderer: renderer, scene: scene, camera: camera, root: root, orbit: orbit, canvas: canvas };
+  }
+
+  function sePoint(a, b, n, t) {
+    var s = Math.sin(t), c = Math.cos(t), e = 2 / n;
+    return [a * Math.sign(s) * Math.pow(Math.abs(s), e), b * Math.sign(c) * Math.pow(Math.abs(c), e)];
+  }
+  function sePerim(a, b, n) {
+    var P = 0, prev = sePoint(a, b, n, 0);
+    for (var i = 1; i <= 180; i++) { var q = sePoint(a, b, n, i / 180 * Math.PI * 2); P += Math.hypot(q[0] - prev[0], q[1] - prev[1]); prev = q; }
+    return P;
+  }
+  function solveSection(C, k, n) { var a = C / sePerim(1, k, n); return { a: a, b: a * k, n: n }; }
+
+  // Mặt cắt ngang thân áo tại độ sâu y (cm, tính từ A xuống).
+  function makeProfile(m, r) {
+    var neckR = r.chanCo / (2 * Math.PI);
+    var chest = solveSection(m.VN + m.CDN, 0.68, 2.4);
+    var waist = solveSection(m.VE + m.CDN, 0.7, 2.3);
+    var hip = solveSection(m.VM + m.CDM, 0.72, 2.3);
+    var hem = solveSection(r.gau, 0.62, 2.2);
+    var keys = [
+      { y: 0, a: neckR, b: neckR, n: 2, z: 1.2 },
+      { y: r.xuoiVai * 0.45, a: neckR + (r.vai - neckR) * 0.72, b: chest.b * 0.78, n: 2.8, z: 0.4 },
+      { y: r.xuoiVai, a: r.vai, b: chest.b * 0.86, n: 3.4, z: 0 },
+      { y: (r.xuoiVai + r.AC) / 2, a: lerp(r.vai, chest.a, 0.55), b: chest.b * 0.95, n: 2.8, z: 0 },
+      { y: r.AC, a: chest.a, b: chest.b, n: 2.4, z: 0 },
+      { y: r.AD, a: waist.a, b: waist.b, n: 2.3, z: 0 },
+      { y: r.AE, a: hip.a, b: hip.b, n: 2.3, z: -0.5 },
+      { y: r.AB, a: hem.a, b: hem.b, n: 2.2, z: 0 }
+    ];
+    return function (y) {
+      if (y <= 0) return keys[0];
+      for (var i = 1; i < keys.length; i++) {
+        if (y <= keys[i].y || i === keys.length - 1) {
+          var A = keys[i - 1], B = keys[i], t = smooth(clamp((y - A.y) / ((B.y - A.y) || 1), 0, 1));
+          return { a: lerp(A.a, B.a, t), b: lerp(A.b, B.b, t), n: lerp(A.n, B.n, t), z: lerp(A.z, B.z, t) };
+        }
+      }
+    };
+  }
+  // Góc t trên mặt cắt sao cho cung từ chính trung (t = 0) bằng s; s > 0 sang bên trái người mặc.
+  function thetaForArc(sec, s, maxT) {
+    var dir = s >= 0 ? 1 : -1, target = Math.abs(s), acc = 0, prev = sePoint(sec.a, sec.b, sec.n, 0), steps = 240;
+    for (var i = 1; i <= steps; i++) {
+      var t = dir * maxT * i / steps, q = sePoint(sec.a, sec.b, sec.n, t);
+      acc += Math.hypot(q[0] - prev[0], q[1] - prev[1]); prev = q;
+      if (acc >= target) return t;
+    }
+    return dir * maxT;
+  }
+
+  function gridGeom(rows, cols, fn) {
+    var pos = [], uv = [], idx = [];
+    for (var i = 0; i < rows; i++) for (var j = 0; j < cols; j++) { var p = fn(i, j); pos.push(p[0], p[1], p[2]); uv.push(p[3], p[4]); }
+    for (i = 0; i < rows - 1; i++) for (j = 0; j < cols - 1; j++) {
+      var a = i * cols + j, b = a + 1, c = a + cols, d = c + 1;
+      idx.push(a, c, b, b, c, d);
+    }
+    var g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    g.setIndex(idx);
+    g.computeVertexNormals();
+    return g;
+  }
+
+  function fabricTexture(kind, hex) {
+    var cv = document.createElement('canvas'); cv.width = cv.height = 512;
+    var x = cv.getContext('2d'), base = new THREE.Color(hex);
+    var shade = function (d, a) { var c = base.clone().offsetHSL(0, 0, d); return 'rgba(' + Math.round(c.r * 255) + ',' + Math.round(c.g * 255) + ',' + Math.round(c.b * 255) + ',' + (a == null ? 1 : a) + ')'; };
+    x.fillStyle = hex; x.fillRect(0, 0, 512, 512);
+    var rnd = (function () { var s = 7; return function () { s = (s * 16807) % 2147483647; return s / 2147483647; }; })();
+    if (kind === 'gam') {
+      var lightOnDark = base.getHSL({}).l < 0.55;
+      var motif = shade(lightOnDark ? 0.12 : -0.12, 0.85), motif2 = shade(lightOnDark ? 0.06 : -0.06, 0.7);
+      for (var gy = 0; gy < 3; gy++) for (var gx = 0; gx < 3; gx++) {
+        var cx = gx * 256 + (gy % 2 ? 128 : 0), cy = gy * 256;
+        [[cx, cy], [cx - 512, cy], [cx + 512, cy]].forEach(function (p) {
+          x.save(); x.translate(p[0], p[1]);
+          x.strokeStyle = motif; x.lineWidth = 6; x.beginPath(); x.arc(0, 0, 56, 0, Math.PI * 2); x.stroke();
+          x.fillStyle = motif;
+          for (var k = 0; k < 8; k++) { x.rotate(Math.PI / 4); x.beginPath(); x.ellipse(0, 30, 9, 22, 0, 0, Math.PI * 2); x.fill(); }
+          x.beginPath(); x.arc(0, 0, 10, 0, Math.PI * 2); x.fill();
+          x.strokeStyle = motif2; x.lineWidth = 4; x.beginPath(); x.arc(0, 0, 80, 0, Math.PI * 2); x.stroke();
+          x.restore();
+        });
+      }
+      x.fillStyle = motif2;
+      for (var d = 0; d < 4; d++) for (var e2 = 0; e2 < 4; e2++) {
+        x.save(); x.translate(64 + d * 128, 128 + e2 * 128 - (d % 2 ? 0 : 0)); x.rotate(Math.PI / 4); x.fillRect(-7, -7, 14, 14); x.restore();
+      }
+    } else if (kind === 'dui') {
+      for (var i = 0; i < 900; i++) {
+        x.strokeStyle = shade((rnd() - 0.5) * 0.14, 0.5); x.lineWidth = 1 + rnd() * 2.5;
+        var yy = rnd() * 512, xx = rnd() * 512, len = 20 + rnd() * 160;
+        x.beginPath(); x.moveTo(xx, yy); x.lineTo(xx + len, yy + (rnd() - 0.5) * 2); x.stroke();
+      }
+      for (i = 0; i < 500; i++) { x.strokeStyle = shade((rnd() - 0.5) * 0.08, 0.35); x.lineWidth = 1; var xv = rnd() * 512; x.beginPath(); x.moveTo(xv, 0); x.lineTo(xv, 512); x.stroke(); }
+    } else if (kind === 'kaki') {
+      x.strokeStyle = shade(-0.05, 0.5); x.lineWidth = 3;
+      for (i = -512; i < 1024; i += 9) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i + 512, 512); x.stroke(); }
+    } else {
+      for (i = 0; i < 60; i++) { x.fillStyle = shade((rnd() - 0.5) * 0.05, 0.25); x.fillRect(0, rnd() * 512, 512, 1 + rnd() * 6); }
+    }
+    var tex = new THREE.CanvasTexture(cv);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.anisotropy = 4;
+    return tex;
+  }
+  var TILE = { gam: 24, dui: 30, kaki: 10, lua: 40 };
+  var ROUGH = { gam: 0.55, dui: 0.92, kaki: 0.88, lua: 0.32 };
+
+  function labelSprite(text, color) {
+    var cv = document.createElement('canvas'); cv.width = 256; cv.height = 64;
+    var x = cv.getContext('2d');
+    x.font = '500 28px IBM Plex Mono, monospace'; x.fillStyle = color; x.textBaseline = 'middle'; x.fillText(text, 6, 32);
+    var s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), depthTest: false, transparent: true }));
+    s.scale.set(32, 8, 1); s.renderOrder = 10;
+    return s;
+  }
+
+  function disposeTree(o) {
+    o.traverse(function (c) {
+      if (c.geometry) c.geometry.dispose();
+      if (c.material) { [].concat(c.material).forEach(function (mm) { if (mm.map) mm.map.dispose(); mm.dispose(); }); }
+    });
+  }
+
+  function buildModel(m, r) {
+    var G = gl;
+    while (G.root.children.length) { var ch = G.root.children[0]; G.root.remove(ch); disposeTree(ch); }
+    var prof = makeProfile(m, r);
+    var Y0 = m.H * 0.818;       // độ cao điểm A (đốt sống cổ) so với sàn
+    var TWO = Math.PI * 2;
+    var tile = TILE[state.fabric];
+    var mat = new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, roughness: ROUGH[state.fabric], metalness: state.fabric === 'gam' ? 0.08 : 0 });
+    mat.map = fabricTexture(state.fabric, state.color);
+    var trimMat = new THREE.MeshStandardMaterial({ color: state.trim, roughness: 0.35, metalness: 0.45 });
+    var skin = new THREE.MeshStandardMaterial({ color: 0xbdb2a6, roughness: 0.75 });
+    var pants = new THREE.MeshStandardMaterial({ color: 0xeeebe4, roughness: 0.9, side: THREE.DoubleSide });
+    var shoe = new THREE.MeshStandardMaterial({ color: 0x2a2523, roughness: 0.6 });
+    var garment = new THREE.Group(), body = new THREE.Group(), guides = new THREE.Group();
+    G.root.add(garment, body, guides);
+    body.visible = state.showBody; guides.visible = state.showGuide;
+    function add(geo, material, grp) { var me = new THREE.Mesh(geo, material); me.userData.part = true; (grp || garment).add(me); return me; }
+    function surf(y, t, grow) {
+      var s = prof(y), q = sePoint(s.a + (grow || 0), s.b + (grow || 0), s.n, t);
+      return [q[0], Y0 - y, q[1] + s.z];
+    }
+    function circ(y) { var s = prof(y); return Math.PI * (3 * (s.a + s.b) - Math.sqrt((3 * s.a + s.b) * (s.a + 3 * s.b))); }
+
+    // Vạt hò và điểm mở cổ
+    var hoFlat = catmull(hoPoints(r), 14);
+    var startT = thetaForArc(prof(0), r.coRong, Math.PI / 2);
+
+    // Thân trên (liền vòng) từ cổ xuống điểm xẻ tà
+    var ROWS = 64, COLS = 129;
+    add(gridGeom(ROWS, COLS, function (i, j) {
+      var y = r.AE * i / (ROWS - 1), t = startT + TWO * j / (COLS - 1), p = surf(y, t);
+      return [p[0], p[1], p[2], (j / (COLS - 1)) * circ(y) / tile, -y / tile];
+    }), mat);
+    // Hai tà: trước và sau, hở ở hai bên sườn
+    [0, Math.PI].forEach(function (center) {
+      var R2 = 40, C2 = 65;
+      add(gridGeom(R2, C2, function (i, j) {
+        var s = i / (R2 - 1), y = lerp(r.AE, r.AB, s), gap = 0.015 + 0.09 * Math.pow(s, 1.2);
+        var half = Math.PI / 2 - gap, t = center - half + 2 * half * j / (C2 - 1), p = surf(y, t);
+        return [p[0], p[1], p[2], ((t - startT + TWO) % TWO) / TWO * circ(y) / tile, -y / tile];
+      }), mat);
+      // Viền gấu
+      var hemPts = [];
+      for (var k = 0; k <= 48; k++) {
+        var gap = 0.015 + 0.09, half = Math.PI / 2 - gap, t = center - half + 2 * half * k / 48, p = surf(r.AB - 0.3, t, 0.15);
+        hemPts.push(new THREE.Vector3(p[0], p[1], p[2]));
+      }
+      add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(hemPts), 64, 0.35, 6, false), trimMat);
+    });
+    // Cổ đứng, hơi nghiêng ra trước và ôm vào ở mép trên
+    var neck = prof(0), CR = 14, CC = 72, gapT = 0.05;
+    add(gridGeom(CR, CC, function (i, j) {
+      var s = i / (CR - 1), y = -r.caoCo * s, k = 1 - 0.06 * s;
+      var t = startT + gapT + (TWO - 2 * gapT) * j / (CC - 1);
+      return [neck.a * k * Math.sin(t), Y0 - y, neck.b * k * Math.cos(t) + neck.z + 0.8 * s, j / (CC - 1) * r.chanCo / tile, -y / tile];
+    }), mat);
+    var rimPts = [];
+    for (var k2 = 0; k2 <= 60; k2++) {
+      var t2 = startT + gapT + (TWO - 2 * gapT) * k2 / 60;
+      rimPts.push(new THREE.Vector3(neck.a * 0.94 * Math.sin(t2), Y0 + r.caoCo, neck.b * 0.94 * Math.cos(t2) + neck.z + 0.8));
+    }
+    add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(rimPts), 80, 0.3, 6, false), trimMat);
+
+    // Đường nẹp vạt hò + nút
+    function flatTo3D(q, lift) {
+      var y = Math.max(q[1], 0.2), s = prof(y), t = thetaForArc(s, q[0], Math.PI / 2 * 0.97);
+      return surf(y, t, lift);
+    }
+    var hoPts = hoFlat.map(function (q) { var p = flatTo3D(q, 0.25); return new THREE.Vector3(p[0], p[1], p[2]); });
+    add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(hoPts), 160, 0.38, 8, false), trimMat);
+    var collarEdge = [];
+    for (var ce = 0; ce <= 6; ce++) {
+      var tt = startT + gapT;
+      collarEdge.push(new THREE.Vector3(neck.a * Math.sin(tt) * (1 - 0.06 * ce / 6) * 1.02, Y0 + r.caoCo * ce / 6, (neck.b * Math.cos(tt) * (1 - 0.06 * ce / 6) + neck.z + 0.8 * ce / 6) * 1.02));
+    }
+    add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(collarEdge), 12, 0.3, 6, false), trimMat);
+    var btnGeo = new THREE.SphereGeometry(0.85, 16, 12);
+    alongLength(hoFlat, m.NUT, 0.05, 0.97).forEach(function (q) {
+      var p = flatTo3D(q, 0.7), b = add(btnGeo.clone(), trimMat); b.position.set(p[0], p[1], p[2]);
+    });
+    var cb = add(btnGeo.clone(), trimMat);
+    cb.position.set(neck.a * Math.sin(startT) * 1.08, Y0 + r.caoCo * 0.5, neck.b * Math.cos(startT) * 1.08 + neck.z + 0.4);
+
+    // Đường sống lưng
+    var spine = [];
+    for (var sp = 0; sp <= 30; sp++) { var yy = lerp(0.5, r.AB - 0.5, sp / 30), pp = surf(yy, Math.PI, 0.06); spine.push(new THREE.Vector3(pp[0], pp[1], pp[2])); }
+    var seamMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(state.color).offsetHSL(0, 0, -0.12), roughness: 0.8 });
+    add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(spine), 60, 0.16, 5, false), seamMat);
+
+    // Tay áo kiểu ráp vai, buông tự nhiên
+    var rTop = 2 * r.bapTay / (2 * Math.PI), rWrist = 2 * r.cuaTay / (2 * Math.PI);
+    var alpha = 11 * Math.PI / 180;
+    [1, -1].forEach(function (side) {
+      var S0 = new THREE.Vector3(side * (r.vai - rTop * 0.72), Y0 - r.xuoiVai - 1.2, 0.3);
+      var dir = new THREE.Vector3(side * Math.sin(alpha), -Math.cos(alpha), 0.05).normalize();
+      var u = new THREE.Vector3().crossVectors(dir, new THREE.Vector3(0, 0, 1)).normalize();
+      var w = new THREE.Vector3().crossVectors(u, dir).normalize();
+      var cap = rTop * 0.85, SR = 48, SC = 33;
+      add(gridGeom(SR, SC, function (i, j) {
+        var s = i / (SR - 1), l = lerp(-cap, m.DT - cap * 0.4, s), rad;
+        if (l < 0) rad = rTop * Math.sqrt(Math.max(0, 1 - Math.pow(l / cap, 2)));
+        else { var tl = l / (m.DT - cap * 0.4); rad = lerp(rTop, rWrist, Math.pow(tl, 0.8)); }
+        var ph = TWO * j / (SC - 1);
+        var p = S0.clone().addScaledVector(dir, l).addScaledVector(u, rad * Math.cos(ph)).addScaledVector(w, rad * 0.9 * Math.sin(ph));
+        return [p.x, p.y, p.z, j / (SC - 1) * 2 * r.bapTay / tile, -(l + r.xuoiVai) / tile];
+      }), mat);
+      var endC = S0.clone().addScaledVector(dir, m.DT - cap * 0.4), cuff = [];
+      for (var c3 = 0; c3 <= 32; c3++) {
+        var ph3 = TWO * c3 / 32;
+        cuff.push(endC.clone().addScaledVector(u, (rWrist + 0.15) * Math.cos(ph3)).addScaledVector(w, (rWrist + 0.15) * 0.9 * Math.sin(ph3)));
+      }
+      add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(cuff, true), 48, 0.32, 6, true), trimMat);
+      var hand = add(new THREE.SphereGeometry(4.3, 20, 14), skin, body);
+      hand.scale.set(0.75, 1.35, 0.55);
+      hand.position.copy(endC.clone().addScaledVector(dir, 6));
+      hand.rotation.z = side * alpha;
+    });
+
+    // Người mẫu: đầu, cổ, chân mặc quần ống suông
+    var nk = add(new THREE.CylinderGeometry(5.4, 5.9, 14, 20), skin, body);
+    nk.position.set(0, Y0 + 5, 1.2);
+    var head = add(new THREE.SphereGeometry(10.5, 28, 20), skin, body);
+    head.scale.set(0.84, 1.08, 0.98); head.position.set(0, Y0 + 20, 2.5);
+    var hipY = Y0 - r.AE + 6;
+    [1, -1].forEach(function (side) {
+      var leg = add(new THREE.CylinderGeometry(8.6, 7.6, hipY - 3, 24, 1, true), pants, body);
+      leg.position.set(side * 8.6, (hipY + 3) / 2, 0);
+      var foot = add(new THREE.BoxGeometry(8, 4, 24), shoe, body);
+      foot.position.set(side * 8.6, 2, 4);
+    });
+
+    // Đường đo trên mô hình
+    var accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#9b2a24';
+    var ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#1f1b19';
+    var lineMat = new THREE.LineBasicMaterial({ color: accent, depthTest: false, transparent: true, opacity: 0.9 });
+    [['Ngực', r.AC, m.VN], ['Eo', r.AD, m.VE], ['Mông', r.AE, m.VM]].forEach(function (g, gi) {
+      var pts = [];
+      for (var q = 0; q <= 96; q++) { var p = surf(g[1], TWO * q / 96, 0.6); pts.push(new THREE.Vector3(p[0], p[1], p[2])); }
+      var ln = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat.clone());
+      ln.renderOrder = 9; guides.add(ln);
+      var lb = labelSprite(g[0] + ' ' + fmt(g[2]), ink);
+      var side = prof(g[1]);
+      lb.position.set(side.a + 30 + (gi === 0 ? 6 : 0), Y0 - g[1], 0); guides.add(lb);
+    });
+    var hemLb = labelSprite('Dài ' + fmt(r.AB), ink);
+    hemLb.position.set(prof(r.AB).a + 20, Y0 - r.AB, 0); guides.add(hemLb);
+
+    G.orbit.target.set(0, m.H * 0.52, 0);
+    G.Y0 = Y0;
+  }
+
+  function resize() {
+    var el = $('stage'), w = el.clientWidth, h = el.clientHeight;
+    gl.renderer.setSize(w, h, false);
+    gl.camera.aspect = w / h;
+    if (!gl.fitted) { gl.orbit.r = w / h < 0.8 ? 470 : 330; gl.fitted = true; }
+    var o = gl.orbit;
+    o.r = clamp(o.r, 140, 700);
+    gl.camera.updateProjectionMatrix();
+  }
+  function placeCamera() {
+    var o = gl.orbit;
+    gl.camera.position.set(o.target.x + o.r * Math.sin(o.phi) * Math.sin(o.theta), o.target.y + o.r * Math.cos(o.phi), o.target.z + o.r * Math.sin(o.phi) * Math.cos(o.theta));
+    gl.camera.lookAt(o.target);
+  }
+  function loop() {
+    if (gl.orbit.spin) gl.orbit.theta += 0.005;
+    placeCamera();
+    gl.renderer.render(gl.scene, gl.camera);
+    requestAnimationFrame(loop);
+  }
+  function bindControls() {
+    var c = gl.canvas, pts = new Map(), lastDist = 0, o = gl.orbit;
+    c.addEventListener('pointerdown', function (e) { c.setPointerCapture(e.pointerId); pts.set(e.pointerId, [e.clientX, e.clientY]); lastDist = 0; });
+    c.addEventListener('pointermove', function (e) {
+      if (!pts.has(e.pointerId)) return;
+      var prev = pts.get(e.pointerId); pts.set(e.pointerId, [e.clientX, e.clientY]);
+      if (pts.size === 1) {
+        o.theta -= (e.clientX - prev[0]) * 0.008;
+        o.phi = clamp(o.phi - (e.clientY - prev[1]) * 0.006, 0.25, 2.6);
+      } else if (pts.size === 2) {
+        var v = Array.from(pts.values()), d = Math.hypot(v[0][0] - v[1][0], v[0][1] - v[1][1]);
+        if (lastDist) o.r = clamp(o.r * lastDist / d, 140, 700);
+        lastDist = d;
+      }
+    });
+    var up = function (e) { pts.delete(e.pointerId); lastDist = 0; };
+    c.addEventListener('pointerup', up); c.addEventListener('pointercancel', up);
+    c.addEventListener('wheel', function (e) { e.preventDefault(); o.r = clamp(o.r * Math.exp(e.deltaY * 0.001), 140, 700); }, { passive: false });
+    var views = { front: [0, 1.45], side: [Math.PI / 2, 1.45], back: [Math.PI, 1.45] };
+    document.querySelectorAll('[data-view]').forEach(function (b) {
+      b.addEventListener('click', function () { var v = views[b.dataset.view]; o.theta = v[0]; o.phi = v[1]; o.r = gl.camera.aspect < 0.8 ? 470 : 330; });
+    });
+    $('spin').addEventListener('click', function () { o.spin = !o.spin; $('spin').setAttribute('aria-pressed', String(o.spin)); });
+    $('tg-body').addEventListener('click', function () { state.showBody = !state.showBody; persist(); syncToggles(); gl.root.children[1].visible = state.showBody; });
+    $('tg-guide').addEventListener('click', function () { state.showGuide = !state.showGuide; persist(); syncToggles(); gl.root.children[2].visible = state.showGuide; });
+    $('obj').addEventListener('click', exportOBJ);
+  }
+  function syncToggles() {
+    $('tg-body').setAttribute('aria-pressed', String(state.showBody));
+    $('tg-guide').setAttribute('aria-pressed', String(state.showGuide));
+  }
+  function exportOBJ() {
+    var out = ['# Ao dai nam - don vi cm', 'o ao_dai'], off = 1;
+    gl.root.children[0].traverse(function (me) {
+      if (!me.isMesh) return;
+      me.updateMatrixWorld();
+      var pos = me.geometry.attributes.position, v = new THREE.Vector3();
+      for (var i = 0; i < pos.count; i++) { v.fromBufferAttribute(pos, i).applyMatrix4(me.matrixWorld); out.push('v ' + v.x.toFixed(3) + ' ' + v.y.toFixed(3) + ' ' + v.z.toFixed(3)); }
+      var idx = me.geometry.index;
+      if (idx) for (i = 0; i < idx.count; i += 3) out.push('f ' + (idx.getX(i) + off) + ' ' + (idx.getX(i + 1) + off) + ' ' + (idx.getX(i + 2) + off));
+      else for (i = 0; i < pos.count; i += 3) out.push('f ' + (i + off) + ' ' + (i + 1 + off) + ' ' + (i + 2 + off));
+      off += pos.count;
+    });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([out.join('\n')], { type: 'text/plain' }));
+    a.download = 'ao-dai-nam-' + state.VN + '-' + state.DA + '.obj';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+
+  // ---------- Cập nhật ----------
+  var pending = 0;
+  function update(onlyLook) {
+    var m = state, r = compute(m);
+    document.querySelectorAll('.sw').forEach(function (b, i) { b.setAttribute('aria-pressed', String(COLORS[i][0] === state.color)); });
+    $('chips').innerHTML =
+      '<span class="chip">Ngang ngực sau <b>' + fmt(r.nguc) + '</b></span>' +
+      '<span class="chip">Tà xẻ <b>' + fmt(r.ta) + ' cm</b></span>' +
+      '<span class="chip">Vòng gấu <b>' + fmt(r.gau) + ' cm</b></span>' +
+      '<span class="chip">Vải chính <b>' + fmt(r.vaiMin / 100) + '–' + fmt(r.vaiMax / 100) + ' m</b></span>' +
+      (r.warn.length ? '<span class="chip warn">' + r.warn.length + ' lưu ý</span>' : '');
+    $('err').hidden = !r.warn.length;
+    $('err').textContent = r.warn.join(' ');
+    if (!onlyLook) { drawPieces(r, m); drawSpec(r, m); drawMaterials(r, m); }
+    persist();
+    if (gl) {
+      cancelAnimationFrame(pending);
+      pending = requestAnimationFrame(function () { buildModel(m, r); });
+    }
+  }
+
+  gl = initGL();
+  if (gl) {
+    bindControls(); syncToggles();
+    if (window.ResizeObserver) new ResizeObserver(resize).observe($('stage')); else window.addEventListener('resize', resize);
+    resize(); loop();
+    // Đổi giao diện sáng/tối thì vẽ lại nhãn đường đo
+    var rebuild = function () { update(true); };
+    if (window.matchMedia) { var mq = window.matchMedia('(prefers-color-scheme: dark)'); if (mq.addEventListener) mq.addEventListener('change', rebuild); }
+    new MutationObserver(rebuild).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  } else {
+    $('nogl').hidden = false; $('gl').hidden = true;
+    document.querySelectorAll('.toolbar, .hint').forEach(function (el) { el.hidden = true; });
+  }
+  drawSteps();
+  update();
+})();
+</script>
+</body>
+</html>
