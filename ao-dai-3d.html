@@ -70,6 +70,7 @@ legend { padding: 0; margin-bottom: 4px; }
 .presets { display: flex; gap: 6px; flex-wrap: wrap; }
 .presets button { flex: 1 1 0; }
 .row { display: grid; grid-template-columns: minmax(0, 1fr) 92px; align-items: center; gap: 8px; }
+.row.sel { grid-template-columns: minmax(0, 1fr) minmax(0, 200px); }
 .row label { font-size: 0.88rem; line-height: 1.25; }
 .row label small { display: block; color: var(--muted); font-size: 0.74rem; }
 .row label code { font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); margin-left: 4px; }
@@ -131,6 +132,37 @@ ol.steps input:checked + div strong { text-decoration: line-through; color: var(
 .mat div { border-top: 2px solid var(--ink); padding-top: 8px; }
 .mat b { font-family: var(--font-mono); font-weight: 500; }
 .mat p { margin: 4px 0 0; color: var(--muted); font-size: 0.88rem; }
+.printcfg { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 760px) { .printcfg { grid-template-columns: minmax(0, 1fr); } }
+.opts { display: grid; gap: 10px; }
+.pick { display: grid; gap: 4px; margin-top: 6px; }
+.pick label { display: flex; gap: 8px; align-items: center; font-size: 0.9rem; cursor: pointer; }
+.pick input { accent-color: var(--accent); }
+.sum { margin: 4px 0 0; font-size: 0.9rem; }
+.sum b { font-family: var(--font-mono); font-weight: 500; }
+.note { margin: 0; font-size: 0.82rem; color: var(--muted); max-width: 52ch; }
+.pagemap { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.pagemap figure { margin: 0; display: grid; gap: 4px; align-content: start; }
+.pagemap svg { width: 100%; height: auto; max-height: 280px; color: var(--ink); }
+.pagemap figcaption { font-size: 0.8rem; color: var(--muted); }
+#print-root { display: none; }
+.sheet { position: relative; overflow: hidden; background: #fff; color: #000; font-family: var(--font-body); break-after: page; page-break-after: always; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.sheet:last-child { break-after: auto; page-break-after: auto; }
+.sheet .tile { position: absolute; left: 10mm; top: 10mm; }
+.sheet .hd { position: absolute; left: 10mm; right: 10mm; top: 3.5mm; display: flex; justify-content: space-between; font-size: 8pt; line-height: 1; }
+.sheet .ft { position: absolute; left: 10mm; right: 10mm; bottom: 2mm; display: flex; justify-content: space-between; align-items: flex-end; font-size: 7pt; line-height: 1; }
+.cover { position: absolute; left: 10mm; right: 10mm; top: 10mm; bottom: 10mm; display: grid; gap: 6mm; align-content: start; font-size: 10pt; line-height: 1.4; }
+.cover h1 { font-size: 20pt; color: #000; }
+.cover ol { margin: 0; padding-left: 5mm; display: grid; gap: 1.5mm; }
+.cover .row2 { display: flex; gap: 8mm; align-items: flex-start; flex-wrap: wrap; }
+.cover .maps { display: flex; flex-wrap: wrap; gap: 6mm; }
+.cover .maps figure { margin: 0; font-size: 8pt; display: grid; gap: 1mm; }
+@media print {
+  html, body { background: #fff !important; }
+  body { padding: 0 !important; }
+  .wrap { display: none !important; }
+  #print-root { display: block; }
+}
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
@@ -163,7 +195,7 @@ ol.steps input:checked + div strong { text-decoration: line-through; color: var(
       </fieldset>
       <fieldset>
         <legend><h2>Vải</h2></legend>
-        <div class="row"><label for="fabric">Chất liệu</label>
+        <div class="row sel"><label for="fabric">Chất liệu</label>
           <select id="fabric">
             <option value="gam">Gấm hoa văn</option>
             <option value="dui">Đũi (linen)</option>
@@ -203,6 +235,7 @@ ol.steps input:checked + div strong { text-decoration: line-through; color: var(
       <button role="tab" type="button" id="t-tso" aria-controls="p-tso" aria-selected="false">Bảng thông số</button>
       <button role="tab" type="button" id="t-vl" aria-controls="p-vl" aria-selected="false">Vật liệu</button>
       <button role="tab" type="button" id="t-may" aria-controls="p-may" aria-selected="false">Quy trình may</button>
+      <button role="tab" type="button" id="t-in" aria-controls="p-in" aria-selected="false">In rập 1:1</button>
     </div>
     <div class="tabpane" role="tabpanel" id="p-rap" aria-labelledby="t-rap">
       <div class="pieces" id="pieces"></div>
@@ -217,8 +250,33 @@ ol.steps input:checked + div strong { text-decoration: line-through; color: var(
     <div class="tabpane" role="tabpanel" id="p-may" aria-labelledby="t-may" hidden>
       <ol class="steps" id="steps"></ol>
     </div>
+    <div class="tabpane" role="tabpanel" id="p-in" aria-labelledby="t-in" hidden>
+      <div class="printcfg">
+        <div class="opts">
+          <div class="row sel"><label for="paper">Khổ giấy</label>
+            <select id="paper">
+              <option value="A4">A4 · máy in văn phòng</option>
+              <option value="A3">A3</option>
+              <option value="A0">A0 · máy in khổ lớn</option>
+            </select>
+          </div>
+          <div class="row"><label for="seam">Đường may chung<small>Vai, cổ, nách, sườn</small></label><div class="num"><input id="seam" type="number" inputmode="decimal" step="0.5" min="0" max="4"><span>cm</span></div></div>
+          <div class="row"><label for="seamH">Sống lưng, gấu &amp; tà<small>Theo quy trình: 1,5 cm</small></label><div class="num"><input id="seamH" type="number" inputmode="decimal" step="0.5" min="0" max="4"><span>cm</span></div></div>
+          <fieldset class="pick" id="pick"><legend class="eyebrow">Chi tiết cần in</legend></fieldset>
+          <p class="sum" id="printSum"></p>
+          <div class="actions">
+            <button class="btn primary" type="button" id="doPrint">In rập 1:1</button>
+            <button class="btn" type="button" id="dlSvg">Tải SVG khổ lớn</button>
+          </div>
+          <p class="note" id="printNote">Trong hộp thoại in, chọn tỉ lệ 100% (Kích thước thực / Actual size) và tắt “Vừa trang”. Trang đầu có ô vuông 10 × 10 cm: đo lại trước khi cắt vải.</p>
+        </div>
+        <div class="pagemap" id="pagemap" aria-label="Sơ đồ ghép trang"></div>
+      </div>
+    </div>
   </section>
 </div>
+<div id="print-root" aria-hidden="true"></div>
+<style id="page-size"></style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -269,6 +327,8 @@ ol.steps input:checked + div strong { text-decoration: line-through; color: var(
   ALL.forEach(function (f) { state[f.id] = f.v; });
   state.fabric = 'gam'; state.color = COLORS[0][0]; state.trim = '#c9a24a';
   state.showBody = true; state.showGuide = true; state.done = {};
+  state.paper = 'A4'; state.seam = 1; state.seamH = 1.5;
+  state.pick = { back: true, front: true, vatcon: true, sleeve: true, collar: true };
   try {
     var saved = JSON.parse(localStorage.getItem(STORE) || 'null');
     if (saved && typeof saved === 'object') Object.keys(state).forEach(function (k) { if (k in saved) state[k] = saved[k]; });
@@ -437,12 +497,36 @@ ol.steps input:checked + div strong { text-decoration: line-through; color: var(
     return '<path d="' + pathOf(pts, true) + '" fill="var(--surface)" stroke="currentColor" stroke-width="1.6" vector-effect="non-scaling-stroke"/>';
   }
 
+  // Hình học các chi tiết rập (cm), dùng chung cho bản vẽ trên màn hình và bản in 1:1.
+  function shapes(r, m) {
+    var S = {};
+    S.back = halfBody(r, false);
+    S.front = mirror(halfBody(r, true));
+    S.ho = catmull(hoPoints(r), 14);
+    S.btns = alongLength(S.ho, m.NUT, 0.05, 0.97);
+    var hb = halfBody(r, true);
+    var ai = hb.findIndex(function (q) { return q[1] >= r.AC - 0.01; });
+    S.vcBottom = r.AC + 6;
+    S.vatcon = hb.slice(0, ai + 1).map(function (q) { return [-q[0], q[1]]; }).concat([[-r.ngucT, S.vcBottom], [r.vatCon, S.vcBottom]]);
+    var bt = r.bapTay, sd = r.sauDauTay, ct = r.cuaTay, DT = m.DT;
+    S.sleeve = [[-bt, sd]].concat(cubic([-bt, sd], [-bt * 0.55, sd * 0.95], [-bt * 0.45, 0], [0, 0], 12))
+      .concat(cubic([0, 0], [bt * 0.45, 0], [bt * 0.55, sd * 0.95], [bt, sd], 12)).concat([[ct, DT], [-ct, DT]]);
+    var L = r.chanCo, h = r.caoCo, bottomEdge = [], topEdge = [];
+    for (var i = 0; i <= 24; i++) {
+      var x = L * i / 24, lift = 0.5 * Math.pow(Math.abs(2 * i / 24 - 1), 2);
+      bottomEdge.push([x, h - lift]);
+      topEdge.push([x, -lift + (i === 0 || i === 24 ? 0.8 : 0)]);
+    }
+    S.collar = bottomEdge.concat(topEdge.reverse());
+    return S;
+  }
+
   function drawPieces(r, m) {
     var html = [];
     var DA = r.AB;
     // Thân sau
     var fs = DA * 0.03;
-    var back = halfBody(r, false);
+    var S = shapes(r, m), back = S.back;
     var g = '';
     [[r.AC, 'C ' + fmt(r.AC)], [r.AD, 'D ' + fmt(r.AD)], [r.AE, 'E ' + fmt(r.AE)]].forEach(function (q) { g += guide(q[0], 0, r.lai + 2, q[1], fs); });
     var c = g + fill(back) +
@@ -457,9 +541,7 @@ ol.steps input:checked + div strong { text-decoration: line-through; color: var(
     html.push(['Thân sau', '× 2 mảnh, ghép sống lưng', svgPiece(c, [0, 0, r.lai + 4, DA], fs)]);
 
     // Thân trước + vạt hò
-    var front = mirror(halfBody(r, true));
-    var ho = catmull(hoPoints(r), 14);
-    var btns = alongLength(ho, m.NUT, 0.05, 0.97);
+    var front = S.front, ho = S.ho, btns = S.btns;
     g = '';
     [[r.AC, 'C'], [r.AD, 'D'], [r.AE, 'E']].forEach(function (q) { g += guide(q[0], -r.laiT, r.laiT, q[1], fs); });
     c = g + fill(front) +
@@ -474,11 +556,7 @@ ol.steps input:checked + div strong { text-decoration: line-through; color: var(
     html.push(['Thân trước (vạt cả)', '× 1, nhìn từ mặt phải vải', svgPiece(c, [-r.laiT - 2, 0, r.laiT + 2, DA], fs)]);
 
     // Vạt con
-    var hb = halfBody(r, true);
-    var ai = hb.findIndex(function (q) { return q[1] >= r.AC - 0.01; });
-    var right = hb.slice(0, ai + 1).map(function (q) { return [-q[0], q[1]]; });
-    var bottom = r.AC + 6;
-    var vc = right.concat([[-r.ngucT, bottom], [r.vatCon, bottom]]);
+    var bottom = S.vcBottom, vc = S.vatcon;
     var fs2 = (r.AC + 10) * 0.07;
     c = guide(r.AC, -r.ngucT, r.vatCon + 2, 'nách', fs2) + fill(vc) +
       '<line x1="0" y1="' + r1(r.coTrSau) + '" x2="0" y2="' + r1(bottom) + '" stroke="var(--muted)" stroke-dasharray="2 5" stroke-width="1" vector-effect="non-scaling-stroke"/>' +
@@ -489,8 +567,7 @@ ol.steps input:checked + div strong { text-decoration: line-through; color: var(
     // Tay
     var bt = r.bapTay, sd = r.sauDauTay, ct = r.cuaTay, DT = m.DT;
     var fs3 = DT * 0.035;
-    var sl = [[-bt, sd]].concat(cubic([-bt, sd], [-bt * 0.55, sd * 0.95], [-bt * 0.45, 0], [0, 0], 12))
-      .concat(cubic([0, 0], [bt * 0.45, 0], [bt * 0.55, sd * 0.95], [bt, sd], 12)).concat([[ct, DT], [-ct, DT]]);
+    var sl = S.sleeve;
     c = guide(sd, -bt, bt, fmt(sd), fs3) + fill(sl) +
       '<line x1="0" y1="0" x2="0" y2="' + DT + '" stroke="var(--accent)" stroke-width="1.2" stroke-dasharray="6 4" vector-effect="non-scaling-stroke"/>' +
       tag(-bt / 2, sd + fs3 * 1.3, fmt(bt)) + tag(bt / 2, sd + fs3 * 1.3, fmt(bt)) + tag(0, DT - fs3 * 0.6, '2 × ' + fmt(ct)) +
@@ -500,13 +577,7 @@ ol.steps input:checked + div strong { text-decoration: line-through; color: var(
     // Cổ
     var L = r.chanCo, h = r.caoCo;
     var fs4 = L * 0.045;
-    var bottomEdge = [], topEdge = [];
-    for (var i = 0; i <= 24; i++) {
-      var x = L * i / 24, lift = 0.5 * Math.pow(Math.abs(2 * i / 24 - 1), 2);
-      bottomEdge.push([x, h - lift]);
-      topEdge.push([x, -lift + (i === 0 || i === 24 ? 0.8 : 0)]);
-    }
-    var collar = bottomEdge.concat(topEdge.reverse());
+    var collar = S.collar;
     c = fill(collar) +
       '<line x1="' + r1(L / 2) + '" y1="-0.6" x2="' + r1(L / 2) + '" y2="' + r1(h + 0.6) + '" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>' +
       tag(L / 2, h + fs4 * 1.6, 'chân cổ ' + fmt(L) + ' · cong 0,5 ở hai đầu') + tag(-fs4 * 0.6, h * 0.6, fmt(h), 'end') +
@@ -553,6 +624,268 @@ ol.steps input:checked + div strong { text-decoration: line-through; color: var(
     var ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select();
     try { document.execCommand('copy'); } catch (e) { /* bỏ qua */ }
     ta.remove();
+  }
+
+  // ---------- In rập 1:1 ----------
+  var PAPER = { A4: [210, 297], A3: [297, 420], A0: [841, 1189] };
+  var MARGIN = 10; // mm, lề trắng quanh khung mỗi trang
+  var PIECE_NAMES = [['back', 'Thân sau'], ['front', 'Thân trước'], ['vatcon', 'Vạt con'], ['sleeve', 'Tay áo'], ['collar', 'Cổ đứng']];
+  var INK = '#000', RED = '#a3221b', GREY = '#666';
+  var FRAMED = (function () { try { return window.self !== window.top; } catch (e) { return true; } })();
+
+  function cleanPoly(pts) {
+    var out = [];
+    pts.forEach(function (q) { var l = out[out.length - 1]; if (!l || Math.hypot(q[0] - l[0], q[1] - l[1]) > 1e-4) out.push(q); });
+    if (out.length > 2 && Math.hypot(out[0][0] - out[out.length - 1][0], out[0][1] - out[out.length - 1][1]) < 1e-4) out.pop();
+    return out;
+  }
+  function polyArea(p) { var a = 0; for (var i = 0; i < p.length; i++) { var q = p[(i + 1) % p.length]; a += p[i][0] * q[1] - q[0] * p[i][1]; } return a / 2; }
+  // Cộng đường may: dời từng cạnh ra ngoài một khoảng riêng (dist(a, b) cm), nối các cạnh bằng giao điểm.
+  function offsetPoly(pts, dist) {
+    var p = cleanPoly(pts), n = p.length, sg = polyArea(p) > 0 ? 1 : -1, E = [], out = [];
+    for (var i = 0; i < n; i++) {
+      var a = p[i], b = p[(i + 1) % n], dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy);
+      E.push({ a: a, e: [dx / len, dy / len], nrm: [sg * dy / len, -sg * dx / len], d: dist(a, b) });
+    }
+    var maxD = Math.max.apply(null, E.map(function (e) { return e.d; }));
+    if (maxD <= 0) return p.slice();
+    for (i = 0; i < n; i++) {
+      var A = E[(i - 1 + n) % n], B = E[i], pt = p[i];
+      var pa = [pt[0] + A.nrm[0] * A.d, pt[1] + A.nrm[1] * A.d], pb = [pt[0] + B.nrm[0] * B.d, pt[1] + B.nrm[1] * B.d];
+      var cr = A.e[0] * B.e[1] - A.e[1] * B.e[0];
+      if (Math.abs(cr) < 1e-4) { out.push(pa); if (Math.abs(A.d - B.d) > 1e-6) out.push(pb); continue; }
+      var t = ((pb[0] - pa[0]) * B.e[1] - (pb[1] - pa[1]) * B.e[0]) / cr;
+      var q = [pa[0] + A.e[0] * t, pa[1] + A.e[1] * t];
+      if (Math.hypot(q[0] - pt[0], q[1] - pt[1]) > 4 * maxD) { out.push(pa, pb); } else out.push(q);
+    }
+    return out;
+  }
+  function bbox(p) {
+    var b = [Infinity, Infinity, -Infinity, -Infinity];
+    p.forEach(function (q) { b[0] = Math.min(b[0], q[0]); b[1] = Math.min(b[1], q[1]); b[2] = Math.max(b[2], q[0]); b[3] = Math.max(b[3], q[1]); });
+    return b;
+  }
+  function densify(p, step) {
+    var out = [];
+    for (var i = 0; i < p.length; i++) {
+      var a = p[i], b = p[(i + 1) % p.length], k = Math.max(1, Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / step));
+      for (var j = 0; j < k; j++) out.push([lerp(a[0], b[0], j / k), lerp(a[1], b[1], j / k)]);
+    }
+    return out;
+  }
+  function inPoly(pt, p) {
+    var inside = false;
+    for (var i = 0, j = p.length - 1; i < p.length; j = i++) {
+      if ((p[i][1] > pt[1]) !== (p[j][1] > pt[1]) && pt[0] < (p[j][0] - p[i][0]) * (pt[1] - p[i][1]) / (p[j][1] - p[i][1]) + p[i][0]) inside = !inside;
+    }
+    return inside;
+  }
+
+  function printPieces(r, m) {
+    var S = shapes(r, m), d = state.seam, dh = state.seamH;
+    var info = 'VN ' + fmt(m.VN) + ' · VE ' + fmt(m.VE) + ' · VM ' + fmt(m.VM) + ' · DA ' + fmt(r.AB) + ' · RV ' + fmt(m.RV);
+    var low = function (a, b) { return (a[1] + b[1]) / 2 >= r.AE - 0.01; };
+    var P = [
+      { key: 'back', name: 'Thân sau', cut: 'Cắt 2 mảnh (gấp đôi vải)', pts: S.back,
+        dist: function (a, b) { return (Math.abs(a[0]) < 0.01 && Math.abs(b[0]) < 0.01) || low(a, b) ? dh : d; },
+        notch: [[r.nguc, r.AC, 1, 0], [r.eo, r.AD, 1, 0], [r.mong, r.AE, 1, 0]],
+        grain: [r.mong * 0.62, r.AC + 4, r.AE + 14], text: [r.mong * 0.42, r.AD - 9],
+        lines: [] },
+      { key: 'front', name: 'Thân trước', cut: 'Cắt 1 (vạt cả), mặt phải vải lên', pts: S.front,
+        dist: function (a, b) { return low(a, b) ? dh : d; },
+        notch: [[r.ngucT, r.AC, 1, 0], [r.eoT, r.AD, 1, 0], [r.mongT, r.AE, 1, 0], [-r.ngucT, r.AC, -1, 0], [-r.eoT, r.AD, -1, 0], [-r.mongT, r.AE, -1, 0]],
+        grain: [r.mongT * 0.55, r.AD - 4, r.AE + 14], text: [0, r.AE + 9],
+        lines: [{ pts: S.ho, color: RED, w: 0.06 }, { pts: [[0, r.coTrSau], [0, r.AB]], color: GREY, w: 0.025, dash: '0.6 0.4' }],
+        dots: S.btns, caption: [[-r.ho - 1, r.AC * 0.48, 'vạt hò ' + fmt(r.ho) + ' cm', 'end']] },
+      { key: 'vatcon', name: 'Vạt con', cut: 'Cắt 1 vải chính + 1 vải lót', pts: S.vatcon,
+        dist: function () { return d; }, notch: [[-r.ngucT, r.AC, -1, 0]],
+        grain: [-r.ngucT * 0.72, r.xuoiVai + 5, S.vcBottom - 3], text: [-r.ngucT * 0.2, r.AC - 3],
+        lines: [{ pts: [[0, r.coTrSau], [0, S.vcBottom]], color: GREY, w: 0.025, dash: '0.6 0.4' }] },
+      { key: 'sleeve', name: 'Tay áo', cut: 'Cắt 2 (gấp đôi vải)', pts: S.sleeve,
+        dist: function (a, b) { return a[1] >= m.DT - 0.01 && b[1] >= m.DT - 0.01 ? dh : d; },
+        notch: [[0, 0, 0, -1]], grain: [0, r.sauDauTay + 16, m.DT - 5], text: [0, r.sauDauTay + 7],
+        lines: [{ pts: [[-r.bapTay, r.sauDauTay], [r.bapTay, r.sauDauTay]], color: GREY, w: 0.025, dash: '0.6 0.4' }] },
+      { key: 'collar', name: 'Cổ đứng', cut: 'Cắt 2 lá + 1 mếch', pts: S.collar, small: true,
+        dist: function () { return d; }, notch: [[r.chanCo / 2, r.caoCo, 0, 1]],
+        grain: null, text: [r.chanCo * 0.27, r.caoCo * 0.62], lines: [] }
+    ];
+    P.forEach(function (p) {
+      p.info = info;
+      p.cutPts = offsetPoly(p.pts, p.dist);
+      p.seamMax = Math.max(d, dh);
+    });
+    return P;
+  }
+
+  function pieceSVG(p) {
+    var s = '<path d="' + pathOf(p.cutPts, true) + '" fill="#fff" stroke="' + INK + '" stroke-width="0.07" stroke-linejoin="round"/>';
+    if (state.seam > 0 || state.seamH > 0) s += '<path d="' + pathOf(p.pts, true) + '" fill="none" stroke="' + GREY + '" stroke-width="0.03" stroke-dasharray="0.5 0.3"/>';
+    (p.lines || []).forEach(function (l) {
+      s += '<path d="' + pathOf(l.pts) + '" fill="none" stroke="' + l.color + '" stroke-width="' + l.w + '"' + (l.dash ? ' stroke-dasharray="' + l.dash + '"' : '') + '/>';
+    });
+    (p.dots || []).forEach(function (q) {
+      s += '<circle cx="' + r1(q[0]) + '" cy="' + r1(q[1]) + '" r="0.55" fill="none" stroke="' + RED + '" stroke-width="0.04"/>' +
+        '<path d="M' + r1(q[0] - 0.3) + ' ' + r1(q[1]) + 'h0.6M' + r1(q[0]) + ' ' + r1(q[1] - 0.3) + 'v0.6" stroke="' + RED + '" stroke-width="0.03"/>';
+    });
+    (p.notch || []).forEach(function (n) {
+      var len = p.seamMax + 0.5;
+      s += '<line x1="' + r1(n[0] - n[2] * 0.4) + '" y1="' + r1(n[1] - n[3] * 0.4) + '" x2="' + r1(n[0] + n[2] * len) + '" y2="' + r1(n[1] + n[3] * len) + '" stroke="' + INK + '" stroke-width="0.06"/>';
+    });
+    if (p.grain) {
+      var gx = p.grain[0], y1 = p.grain[1], y2 = p.grain[2];
+      s += '<path d="M' + r1(gx) + ' ' + r1(y1) + 'V' + r1(y2) + 'M' + r1(gx - 0.6) + ' ' + r1(y1 + 1.2) + 'L' + r1(gx) + ' ' + r1(y1) + 'L' + r1(gx + 0.6) + ' ' + r1(y1 + 1.2) +
+        'M' + r1(gx - 0.6) + ' ' + r1(y2 - 1.2) + 'L' + r1(gx) + ' ' + r1(y2) + 'L' + r1(gx + 0.6) + ' ' + r1(y2 - 1.2) + '" fill="none" stroke="' + INK + '" stroke-width="0.05"/>' +
+        '<text transform="translate(' + r1(gx - 0.35) + ' ' + r1((y1 + y2) / 2) + ') rotate(-90)" text-anchor="middle" font-size="0.5" letter-spacing="0.08" fill="' + INK + '">CANH SỢI DỌC</text>';
+    }
+    var tx = p.text[0], ty = p.text[1], halo = ' stroke="#fff" stroke-width="0.14" paint-order="stroke" stroke-linejoin="round"';
+    var seamTxt = state.seam > 0 || state.seamH > 0 ? 'Đã cộng đường may ' + fmt(state.seam) + ' cm' + (p.key === 'collar' || p.key === 'vatcon' ? '' : ' · ' + (p.key === 'sleeve' ? 'cửa tay ' : 'gấu, tà ') + fmt(state.seamH) + ' cm') : 'Rập tinh, chưa cộng đường may';
+    if (p.small) {
+      s += '<text x="' + r1(tx) + '" y="' + r1(ty) + '" text-anchor="middle" font-size="0.75" font-weight="600" fill="' + INK + '"' + halo + '>' + p.name + ' · ' + p.cut + '</text>';
+    } else {
+      s += '<text x="' + r1(tx) + '" y="' + r1(ty) + '" text-anchor="middle" font-size="1.5" font-weight="600" fill="' + INK + '"' + halo + '>' + p.name + '</text>' +
+        '<text x="' + r1(tx) + '" y="' + r1(ty + 1.2) + '" text-anchor="middle" font-size="0.65" fill="' + INK + '"' + halo + '>' + p.cut + '</text>' +
+        '<text x="' + r1(tx) + '" y="' + r1(ty + 2.1) + '" text-anchor="middle" font-size="0.5" fill="' + GREY + '"' + halo + '>' + p.info + '</text>' +
+        '<text x="' + r1(tx) + '" y="' + r1(ty + 2.9) + '" text-anchor="middle" font-size="0.5" fill="' + GREY + '"' + halo + '>' + seamTxt + '</text>';
+    }
+    (p.caption || []).forEach(function (c) {
+      s += '<text x="' + r1(c[0]) + '" y="' + r1(c[1]) + '" text-anchor="' + c[3] + '" font-size="0.55" fill="' + RED + '"' + halo + '>' + c[2] + '</text>';
+    });
+    return s;
+  }
+
+  function layoutPrint() {
+    var m = state, r = compute(m), paper = PAPER[state.paper];
+    var tw = (paper[0] - 2 * MARGIN) / 10, th = (paper[1] - 2 * MARGIN) / 10, n = 0, pages = [];
+    var pieces = printPieces(r, m).filter(function (p) { return state.pick[p.key]; });
+    pieces.forEach(function (p) {
+      var bb = bbox(p.cutPts), pad = 1, bw = bb[2] - bb[0] + 2 * pad, bh = bb[3] - bb[1] + 2 * pad;
+      var cols = Math.max(1, Math.ceil(bw / tw - 1e-6)), rows = Math.max(1, Math.ceil(bh / th - 1e-6));
+      var g = { cols: cols, rows: rows, x0: bb[0] - pad - (cols * tw - bw) / 2, y0: bb[1] - pad - (rows * th - bh) / 2, tiles: {} };
+      var dense = densify(p.cutPts, 0.5);
+      for (var row = 0; row < rows; row++) for (var col = 0; col < cols; col++) {
+        var x = g.x0 + col * tw, y = g.y0 + row * th;
+        var hit = inPoly([x + tw / 2, y + th / 2], p.cutPts) || dense.some(function (q) { return q[0] >= x && q[0] <= x + tw && q[1] >= y && q[1] <= y + th; });
+        if (hit) { var pg = { piece: p, row: row, col: col, x: x, y: y, num: ++n + 1 }; g.tiles[row + ',' + col] = pg; pages.push(pg); }
+      }
+      p.grid = g;
+    });
+    return { r: r, m: m, paper: paper, tw: tw, th: th, pieces: pieces, pages: pages };
+  }
+
+  function mapSVG(p, L, color, accent, mono) {
+    var g = p.grid, s = '<path d="' + pathOf(p.cutPts, true) + '" fill="none" stroke="' + color + '" stroke-width="1.2" vector-effect="non-scaling-stroke"/>';
+    for (var row = 0; row < g.rows; row++) for (var col = 0; col < g.cols; col++) {
+      var pg = g.tiles[row + ',' + col], x = g.x0 + col * L.tw, y = g.y0 + row * L.th;
+      if (!pg) continue;
+      s += '<rect x="' + r1(x) + '" y="' + r1(y) + '" width="' + r1(L.tw) + '" height="' + r1(L.th) + '" fill="none" stroke="' + accent + '" stroke-width="1" stroke-dasharray="3 2" vector-effect="non-scaling-stroke"/>' +
+        '<text x="' + r1(x + L.tw / 2) + '" y="' + r1(y + L.th / 2) + '" text-anchor="middle" dominant-baseline="central" font-size="' + r1(Math.min(L.tw, L.th) * 0.32) + '" font-family="' + mono + '" fill="' + accent + '">' + pg.num + '</text>';
+    }
+    return '<svg viewBox="' + r1(g.x0 - 1) + ' ' + r1(g.y0 - 1) + ' ' + r1(g.cols * L.tw + 2) + ' ' + r1(g.rows * L.th + 2) + '" role="img" aria-label="' + p.name + '">' + s + '</svg>';
+  }
+
+  function drawPageMap() {
+    var L = layoutPrint();
+    $('pagemap').innerHTML = L.pieces.map(function (p) {
+      return '<figure>' + mapSVG(p, L, 'currentColor', 'var(--accent)', 'IBM Plex Mono, monospace') + '<figcaption>' + p.name + ' · ' + p.grid.cols + ' × ' + p.grid.rows + ' khung</figcaption></figure>';
+    }).join('');
+    $('printSum').innerHTML = L.pages.length ? 'Tổng <b>' + (L.pages.length + 1) + '</b> trang ' + state.paper + ': 1 trang hướng dẫn và ' + L.pages.length + ' trang rập.' : 'Chọn ít nhất một chi tiết để in.';
+    $('doPrint').disabled = $('dlSvg').disabled = !L.pages.length;
+  }
+
+  function ruler(cm) {
+    var s = '<svg width="' + cm * 10 + 'mm" height="3mm" viewBox="0 0 ' + cm + ' 0.3"><path d="M0 0.29H' + cm;
+    for (var i = 0; i <= cm * 2; i++) s += 'M' + i / 2 + ' 0.29V' + (i % 2 ? 0.15 : 0);
+    return s + '" stroke="#000" stroke-width="0.02" fill="none"/></svg>';
+  }
+
+  function buildPrint() {
+    var L = layoutPrint(), W = L.paper[0], H = L.paper[1], total = L.pages.length + 1, r = L.r, m = L.m;
+    $('page-size').textContent = '@page { size: ' + W + 'mm ' + H + 'mm; margin: 0; }';
+    var sheetOpen = '<section class="sheet" style="width:' + W + 'mm;height:' + (H - 0.5) + 'mm">';
+    var foot = '<div class="ft">' + ruler(5) + '<span>Vạch kiểm tra 5 cm · Áo dài nam · ' + L.pieces[0].info + '</span></div>';
+    var sq = '<svg width="101mm" height="101mm" viewBox="-0.05 -0.05 10.1 10.1"><rect width="10" height="10" fill="none" stroke="#000" stroke-width="0.04"/>';
+    for (var i = 1; i < 10; i++) sq += '<path d="M' + i + ' 0v0.4M' + i + ' 10v-0.4M0 ' + i + 'h0.4M10 ' + i + 'h-0.4" stroke="#000" stroke-width="0.02"/>';
+    sq += '<text x="5" y="5.2" text-anchor="middle" font-size="0.7" font-weight="600">10 × 10 cm</text></svg>';
+    var cover = sheetOpen + '<div class="cover">' +
+      '<div><h1>Rập áo dài nam · tỉ lệ 1:1</h1><div>' + L.pieces[0].info + ' · HE ' + fmt(m.HE) + ' · DT ' + fmt(m.DT) + ' · VC ' + fmt(m.VC) + ' · CT ' + fmt(m.CT) + ' (cm) · ' + total + ' trang ' + state.paper + '</div></div>' +
+      '<div class="row2">' + sq + '<ol>' +
+      '<li>In ở tỉ lệ 100% (Kích thước thực / Actual size), tắt “Vừa trang / Fit to page”.</li>' +
+      '<li>Đo ô vuông bên cạnh: phải đúng 10 × 10 cm. Lệch quá 1 mm thì chỉnh máy in và in lại.</li>' +
+      '<li>Xếp trang theo sơ đồ bên dưới. Cắt bỏ lề trắng bên phải và bên dưới mỗi trang sát theo khung, đặt chồng lên trang kế cho hai nửa hình thoi khớp thành một, rồi dán băng keo.</li>' +
+      '<li>Nét liền đậm là đường cắt. Nét đứt xám là đường may. Vạch ngắn ở mép là dấu bấm để khớp ngực, eo, mông và đỉnh tay.</li>' +
+      '<li>Thân trước: đường đỏ là nẹp vạt hò, vòng tròn đỏ là vị trí đơm nút.</li></ol></div>' +
+      '<div class="maps">' + L.pieces.map(function (p) {
+        var gw = p.grid.cols * L.tw + 2, gh = p.grid.rows * L.th + 2, k = Math.min(46 / gh, 60 / gw);
+        return '<figure>' + mapSVG(p, L, '#000', RED, 'IBM Plex Mono, monospace').replace('<svg ', '<svg width="' + r1(gw * k) + 'mm" height="' + r1(gh * k) + 'mm" ') + '<figcaption>' + p.name + '</figcaption></figure>';
+      }).join('') + '</div></div>' + '<div class="hd"><b>Hướng dẫn ghép trang</b><span>Trang 1 / ' + total + '</span></div>' + foot + '</section>';
+
+    var sheets = [cover];
+    L.pieces.forEach(function (p) { p.svg = pieceSVG(p); });
+    L.pages.forEach(function (pg) {
+      var p = pg.piece, g = p.grid, x = pg.x, y = pg.y, tw = L.tw, th = L.th, mk = '';
+      mk += '<rect x="' + r1(x) + '" y="' + r1(y) + '" width="' + r1(tw) + '" height="' + r1(th) + '" fill="none" stroke="#000" stroke-width="0.02"/>';
+      [[0, -1], [0, 1], [-1, 0], [1, 0]].forEach(function (dv) {
+        var nb = g.tiles[(pg.row + dv[0]) + ',' + (pg.col + dv[1])];
+        if (!nb) return;
+        var cx = dv[1] === 1 ? x + tw : dv[1] === -1 ? x : x + tw / 2, cy = dv[0] === 1 ? y + th : dv[0] === -1 ? y : y + th / 2, k = 0.8;
+        var tri = dv[1] ? [[cx, cy - k], [cx - dv[1] * k, cy], [cx, cy + k]] : [[cx - k, cy], [cx, cy - dv[0] * k], [cx + k, cy]];
+        mk += '<path d="' + pathOf(tri, true) + '" fill="#000"/>';
+        var lx = dv[1] ? cx - dv[1] * 1.2 : cx, ly = dv[0] ? cy - dv[0] * 1.4 : cy + 2.2;
+        mk += '<text x="' + r1(lx) + '" y="' + r1(ly + 0.2) + '" text-anchor="' + (dv[1] === 1 ? 'end' : dv[1] === -1 ? 'start' : 'middle') + '" font-size="0.45" fill="#000">ghép trang ' + nb.num + '</text>';
+      });
+      sheets.push(sheetOpen + '<div class="hd"><span><b>' + p.name + '</b> · hàng ' + (pg.row + 1) + '/' + g.rows + ' · cột ' + (pg.col + 1) + '/' + g.cols + '</span><span>Trang ' + pg.num + ' / ' + total + '</span></div>' +
+        '<svg class="tile" width="' + (W - 2 * MARGIN) + 'mm" height="' + (H - 2 * MARGIN) + 'mm" viewBox="' + r1(x) + ' ' + r1(y) + ' ' + r1(tw) + ' ' + r1(th) + '" font-family="Be Vietnam Pro, Arial, sans-serif">' + p.svg + mk + '</svg>' + foot + '</section>');
+    });
+    $('print-root').innerHTML = sheets.join('');
+    return L;
+  }
+
+  function plotterFile() {
+    var L = layoutPrint(), x = 2, H = 12, parts = [];
+    L.pieces.forEach(function (p) {
+      var bb = bbox(p.cutPts);
+      parts.push('<g transform="translate(' + r1(x - bb[0]) + ' ' + r1(2 - bb[1]) + ')">' + pieceSVG(p) + '</g>');
+      x += bb[2] - bb[0] + 3; H = Math.max(H, bb[3] - bb[1] + 4);
+    });
+    var sq = '<g transform="translate(' + r1(x) + ' 2)"><rect width="10" height="10" fill="none" stroke="#000" stroke-width="0.04"/><text x="5" y="5.2" text-anchor="middle" font-size="0.7">10 × 10 cm</text></g>';
+    var W = r1(x + 12); H = r1(H);
+    return '<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="' + W + 'cm" height="' + H + 'cm" viewBox="0 0 ' + W + ' ' + H + '" font-family="Be Vietnam Pro, Arial, sans-serif">' + parts.join('') + sq + '</svg>';
+  }
+
+  function saveFile(name, text, type) {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([text], { type: type }));
+    a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+
+  function initPrintUI() {
+    PIECE_NAMES.forEach(function (pn) {
+      var lb = document.createElement('label');
+      lb.innerHTML = '<input type="checkbox" id="pk-' + pn[0] + '"' + (state.pick[pn[0]] ? ' checked' : '') + '> ' + pn[1];
+      $('pick').appendChild(lb);
+      lb.querySelector('input').addEventListener('change', function (e) { state.pick[pn[0]] = e.target.checked; persist(); drawPageMap(); });
+    });
+    $('paper').value = state.paper;
+    $('paper').addEventListener('change', function () { state.paper = $('paper').value; persist(); drawPageMap(); });
+    ['seam', 'seamH'].forEach(function (k) {
+      var inp = $(k);
+      inp.value = state[k];
+      inp.addEventListener('input', function () {
+        var v = parseFloat(inp.value.replace(',', '.'));
+        inp.setAttribute('aria-invalid', String(!isFinite(v) || v < 0 || v > 4));
+        if (!isFinite(v)) return;
+        state[k] = clamp(v, 0, 4); persist(); drawPageMap();
+      });
+    });
+    window.addEventListener('beforeprint', buildPrint);
+    $('doPrint').addEventListener('click', function () { buildPrint(); window.print(); });
+    $('dlSvg').addEventListener('click', function () { saveFile('rap-ao-dai-nam-1-1.svg', plotterFile(), 'image/svg+xml'); });
+    if (FRAMED) {
+      $('doPrint').hidden = $('dlSvg').hidden = $('obj').hidden = true;
+      $('printNote').textContent = 'Bản xem trước này không in hay tải file được. Mở file ao-dai-3d.html trực tiếp trong trình duyệt để in rập 1:1 hoặc tải SVG cho máy in khổ lớn.';
+    }
   }
 
   function drawMaterials(r, m) {
@@ -973,11 +1306,7 @@ ol.steps input:checked + div strong { text-decoration: line-through; color: var(
       else for (i = 0; i < pos.count; i += 3) out.push('f ' + (i + off) + ' ' + (i + 1 + off) + ' ' + (i + 2 + off));
       off += pos.count;
     });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([out.join('\n')], { type: 'text/plain' }));
-    a.download = 'ao-dai-nam-' + state.VN + '-' + state.DA + '.obj';
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    saveFile('ao-dai-nam-' + state.VN + '-' + state.DA + '.obj', out.join('\n'), 'text/plain');
   }
 
   // ---------- Cập nhật ----------
@@ -993,7 +1322,7 @@ ol.steps input:checked + div strong { text-decoration: line-through; color: var(
       (r.warn.length ? '<span class="chip warn">' + r.warn.length + ' lưu ý</span>' : '');
     $('err').hidden = !r.warn.length;
     $('err').textContent = r.warn.join(' ');
-    if (!onlyLook) { drawPieces(r, m); drawSpec(r, m); drawMaterials(r, m); }
+    if (!onlyLook) { drawPieces(r, m); drawSpec(r, m); drawMaterials(r, m); drawPageMap(); }
     persist();
     if (gl) {
       cancelAnimationFrame(pending);
@@ -1015,6 +1344,7 @@ ol.steps input:checked + div strong { text-decoration: line-through; color: var(
     document.querySelectorAll('.toolbar, .hint').forEach(function (el) { el.hidden = true; });
   }
   drawSteps();
+  initPrintUI();
   update();
 })();
 </script>
